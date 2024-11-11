@@ -1,16 +1,17 @@
 ﻿
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace MusicManager.DBManagement
 {
     internal class DBQuery
     {
         public string Text { get; }
-        public int[] Parameters { get; }
+        public int[] Parameters { get; set; }
 
-        public DBQuery(string query, params int[] parameters)
+        public DBQuery(string text, params int[] parameters)
         {
-            Text = query;
+            Text = text;
             Parameters = parameters;
         }
     }

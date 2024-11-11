@@ -6,13 +6,13 @@ using System.Text.RegularExpressions;
 
 namespace MusicManager.DBManagement
 {
-    internal sealed class DataBaseManager
+    internal sealed class DataBase
     {
         private readonly string _connectionString;
         private SqlConnection _connection;
 
 
-        public DataBaseManager(string connectionString)
+        public DataBase(string connectionString)
         {
             _connectionString = connectionString;
             _connection = new SqlConnection(_connectionString);
@@ -36,7 +36,7 @@ namespace MusicManager.DBManagement
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(this.ToString() + " " + ex.Message);
                 return resultDataTable;
             }
         }

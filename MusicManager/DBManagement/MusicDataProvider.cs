@@ -1,43 +1,46 @@
-﻿using System;
+﻿using MusicManager.DBManagement.Base;
+using System.Collections.Generic;
 using System.Data;
-using System.Linq;
+using System.IO;
 using System.Windows;
 
 namespace MusicManager.DBManagement
 {
-    internal class MusicDataProvider : DBDataProviderBase<ContentListType>
+    internal class MusicDataProvider : DBDataProviderBase<DataListType>
     {
-        public MusicDataProvider(string connectionString) : base(connectionString) { }
+        private string _statePath = Path.Combine(JsonDataManager.DefaultSavePathDict[SaveDataType.Query], "musicDataProvider.json");
+        private DBQueryCollection<DataListType> _queryCollection;
 
-        public override DataTable RequestData(ContentListType type, params int[] parameters)
+
+        public MusicDataProvider(string connectionString) : base(connectionString)
         {
-            return type switch
+            _queryCollection = new DBQueryCollection<DataListType>();
+            _queryCollection.LoadStateFromJson(_statePath).ToString();
+        }
+
+        public override DataTable TryRequestData(DataListType type, params int[] parameters)
+        {
+            DataTable requestedData = null;
+            
+            if (_queryCollection.ContainKey(type))
             {
-                ContentListType.Author => RequestAuthors(),
-                ContentListType.AuthorMusic => RequestSelectedAuthorMusic(parameters.FirstOrDefault(0)),
-                ContentListType.AllMusic => RequestAllMusic(),
-
-                _ => throw new NotSupportedException(),
-            };
-
+                _queryCollection[type].Parameters = parameters;
+                requestedData = DataBase.SendQuery(_queryCollection[type]);
+            }
+            return requestedData;
         }
 
-        private DataTable RequestAuthors()
+        public override bool IsDataAvailable(DataListType type, params int[] parameters)
         {
-            string authorQuery = "SELECT * FROM Author";
-            return DataBaseManager.CreateAndSendQuery(authorQuery);
-        }
+            bool isAvailable = false;
 
-        private DataTable RequestSelectedAuthorMusic(int authorID)
-        {
-            string musicQuery = "SELECT * FROM Music m inner join AuthorMusic am on m.Id = am.Id where am.AuthorId = @authorID;";
-            return DataBaseManager.CreateAndSendQuery(musicQuery, authorID);
-        }
+            if (_queryCollection.ContainKey(type))
+            {
+                _queryCollection[type].Parameters = parameters;
+                isAvailable = DataBase.SendQuery(_queryCollection[type]).DefaultView.Count != 0;
+            }
 
-        private DataTable RequestAllMusic()
-        {
-            string allMusicQuery = "SELECT * FROM Music";
-            return DataBaseManager.CreateAndSendQuery(allMusicQuery);
+            return isAvailable;
         }
     }
 }

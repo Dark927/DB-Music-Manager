@@ -8,7 +8,7 @@ namespace MusicManager
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     /// 
-    public enum ContentListType
+    public enum DataListType
     {
         Author,
         AuthorMusic,
@@ -38,7 +38,7 @@ namespace MusicManager
             AllMusicListBox.SelectedValuePath = "Id";
         }
 
-        public void UpdateInfoList(DataTable data, ContentListType infoType)
+        public void UpdateInfoList(DataTable data, DataListType infoType)
         {
             ListBox targetListBox = GetListBoxByContentType(infoType);
 
@@ -48,25 +48,24 @@ namespace MusicManager
             }
         }
 
-        private ListBox GetListBoxByContentType(ContentListType type)
+        private ListBox GetListBoxByContentType(DataListType type)
         {
             return type switch
             {
-                ContentListType.Author => AuthorsListBox,
-                ContentListType.AuthorMusic => AuthorMusicListBox,
-                ContentListType.AllMusic => AllMusicListBox,
+                DataListType.Author => AuthorsListBox,
+                DataListType.AuthorMusic => AuthorMusicListBox,
+                DataListType.AllMusic => AllMusicListBox,
                 _ => null
             };
         }
 
         private void MusicLb_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            _viewModel.SetActualAuthorMusicList((int)AuthorsListBox.SelectedValue);
+            _viewModel.RequestListUpdateByType(DataListType.AuthorMusic, (int)AuthorsListBox.SelectedValue);
         }
 
         private void DeleteAuthor_Click(object sender, RoutedEventArgs e)
         {
-
         }
     }
 }
