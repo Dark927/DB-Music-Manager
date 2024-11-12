@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using System.Windows.Input;
 
 namespace MusicManager
 {
@@ -19,12 +20,11 @@ namespace MusicManager
 
             _dbDataProvider = new MusicDataProvider(_connectionString);
             _dbDataEditor = new MusicDataEditor(_connectionString);
-
         }
 
         public void RequestListUpdateByType(DataListType type, params int[] parameters)
         {
-            DataTable updatedData = _dbDataProvider.TryRequestData(type, parameters);
+            DataTable updatedData = _dbDataProvider.RequestData(type, parameters);
             _mainWindow.UpdateInfoList(updatedData, type);
         }
 
@@ -33,7 +33,10 @@ namespace MusicManager
             return _dbDataProvider.IsDataAvailable(type, parameters);
         }
 
-
+        public void DeleteDataOfType(DataListType type, params int[] parameters)
+        {
+            _dbDataEditor.DeleteData(type, parameters);
+        }
 
         public void Initialize()
         {

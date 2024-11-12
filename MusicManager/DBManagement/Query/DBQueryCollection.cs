@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using MusicManager.Utilities;
 
 
-namespace MusicManager.DBManagement.Base
+namespace MusicManager.DBManagement.Query
 {
     internal sealed class DBQueryCollection<TData> where TData : Enum
     {

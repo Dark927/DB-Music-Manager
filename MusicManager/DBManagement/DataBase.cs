@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Windows;
 using System.Text.RegularExpressions;
+using MusicManager.DBManagement.Query;
 
 namespace MusicManager.DBManagement
 {

@@ -17,7 +17,7 @@
         <ListBox x:Name="_authorsListBox" x:FieldModifier="private" Margin="64,48,544,206" SelectionMode="Single" SelectionChanged="MusicLb_SelectionChanged"/>
         <Button Content="Delete Author" HorizontalAlignment="Left" Height="31" Margin="80,245,0,0" VerticalAlignment="Top" Width="160" Click="DeleteAuthor_Click"/>
         <Button Content="Add Author" HorizontalAlignment="Left" Height="31" Margin="80,327,0,0" VerticalAlignment="Top" Width="160"/>
-        <Button Content="Update Authors" HorizontalAlignment="Left" Height="31" Margin="80,374,0,0" VerticalAlignment="Top" Width="160"/>
+        <Button Content="Update Authors" HorizontalAlignment="Left" Height="31" Margin="80,374,0,0" VerticalAlignment="Top" Width="160" Click="UpdateAuthor_Click"/>
 
         <Label Content="Author's Music" HorizontalAlignment="Left" Margin="298,22,0,0" VerticalAlignment="Top" Foreground="White"/>
         <ListBox x:Name="_authorMusicListBox" x:FieldModifier="private" Margin="298,48,310,206" SelectionMode="Extended"/>

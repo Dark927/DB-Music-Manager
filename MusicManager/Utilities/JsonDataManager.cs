@@ -9,7 +9,7 @@ using System.Windows;
 using System.IO;
 using System.Data.SqlTypes;
 
-namespace MusicManager.DBManagement.Base
+namespace MusicManager.Utilities
 {
     enum SaveDataType
     {

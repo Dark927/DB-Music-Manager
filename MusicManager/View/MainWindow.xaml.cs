@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace MusicManager
 {
@@ -61,11 +62,24 @@ namespace MusicManager
 
         private void MusicLb_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            _viewModel.RequestListUpdateByType(DataListType.AuthorMusic, (int)AuthorsListBox.SelectedValue);
+            if (AuthorsListBox.SelectedValue != null)
+            {
+                _viewModel.RequestListUpdateByType(DataListType.AuthorMusic, (int)AuthorsListBox.SelectedValue);
+            }
+            else
+            {
+                AuthorMusicListBox.ItemsSource = null;
+            }
         }
 
         private void DeleteAuthor_Click(object sender, RoutedEventArgs e)
         {
+            _viewModel.DeleteDataOfType(DataListType.Author, (int)AuthorsListBox.SelectedValue);
+        }
+
+        private void UpdateAuthor_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.RequestListUpdateByType(DataListType.Author);
         }
     }
 }

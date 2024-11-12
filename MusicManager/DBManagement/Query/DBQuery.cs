@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace MusicManager.DBManagement
+namespace MusicManager.DBManagement.Query
 {
     internal class DBQuery
     {

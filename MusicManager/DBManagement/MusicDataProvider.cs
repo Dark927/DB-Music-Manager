@@ -1,8 +1,7 @@
-﻿using MusicManager.DBManagement.Base;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.IO;
-using System.Windows;
+using MusicManager.DBManagement.Query;
+using MusicManager.Utilities;
 
 namespace MusicManager.DBManagement
 {
@@ -18,7 +17,7 @@ namespace MusicManager.DBManagement
             _queryCollection.LoadStateFromJson(_statePath).ToString();
         }
 
-        public override DataTable TryRequestData(DataListType type, params int[] parameters)
+        public override DataTable RequestData(DataListType type, params int[] parameters)
         {
             DataTable requestedData = null;
             
