@@ -1,49 +1,55 @@
 ﻿using MusicManager.DBManagement;
+using System;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace MusicManager
+namespace MusicManager.ViewModel
 {
     public class MainViewModel
     {
-        private MainWindow _mainWindow;
         private string _connectionString = ConfigurationManager.ConnectionStrings["MusicManager.Properties.Settings.MusicManagerDBConnectionString"].ConnectionString;
-        private DBDataProviderBase<DataListType> _dbDataProvider;
-        private DBDataEditorBase<DataListType> _dbDataEditor;
+
+        private DBToolsManager _dbToolManager;
+
+        public ICommand DeleteCommand { get; }
+
+        public DataTable AllMusicData { get; set; }
+        public DataTable AuthorData { get; set; }
+
+        public int SelectedAuthorId { get; set; }
+
 
         public MainViewModel()
         {
-            _mainWindow = new MainWindow(this);
-            Application.Current.MainWindow = _mainWindow;
-
-            _dbDataProvider = new MusicDataProvider(_connectionString);
-            _dbDataEditor = new MusicDataEditor(_connectionString);
+            _dbToolManager = new DBToolsManager(_connectionString);
+            AllMusicData = _dbToolManager.RequestData(MusicDataType.All);
+            //AuthorData = _dbToolManager.RequestData(AuthorDataType.All);
         }
 
-        public void RequestListUpdateByType(DataListType type, params int[] parameters)
-        {
-            DataTable updatedData = _dbDataProvider.RequestData(type, parameters);
-            _mainWindow.UpdateInfoList(updatedData, type);
-        }
+        //public void RequestListUpdateByType(MainDataTypes type, params int[] parameters)
+        //{
+        //    DataTable updatedData = _dbDataProvider.RequestData(type, parameters);
+        //    _mainWindow.UpdateInfoList(updatedData, type);
+        //}
 
-        public bool IsDataAvailableOfType(DataListType type, params int[] parameters)
-        {
-            return _dbDataProvider.IsDataAvailable(type, parameters);
-        }
+        //public bool IsDataAvailableOfType(MainDataTypes type, params int[] parameters)
+        //{
+        //    return _dbDataProvider.IsDataAvailable(type, parameters);
+        //}
 
-        public void DeleteDataOfType(DataListType type, params int[] parameters)
-        {
-            _dbDataEditor.DeleteData(type, parameters);
-        }
+        //public void DeleteDataOfType(MainDataTypes type, params int[] parameters)
+        //{
+        //    _dbDataEditor.DeleteData(type, parameters);
+        //}
 
-        public void Initialize()
-        {
-            RequestListUpdateByType(DataListType.Author);
-            RequestListUpdateByType(DataListType.AllMusic);
-
-            _mainWindow.Show();
-        }
+        //public void Initialize()
+        //{
+        //    RequestListUpdateByType(MainDataTypes.Author);
+        //    RequestListUpdateByType(MainDataTypes.AllMusic);
+        //}
     }
 }

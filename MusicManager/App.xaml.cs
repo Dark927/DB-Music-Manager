@@ -13,13 +13,9 @@ namespace MusicManager
     /// </summary>
     public partial class App : Application
     {
-        private MainViewModel _mainViewMode;
-
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            _mainViewMode = new MainViewModel();
-            _mainViewMode.Initialize();
         }
     }
 }

@@ -1,15 +1,16 @@
 ﻿
 namespace MusicManager.DBManagement
 {
-    internal abstract class DBManagerBase
+    internal class DBToolBase
     {
         private DataBase _dataBase;
 
         protected DataBase DataBase { get => _dataBase; }
 
-        public DBManagerBase(string connectionString)
+        public DBToolBase(DataBase dataBase)
         {
-            _dataBase = new DataBase(connectionString);
+            _dataBase = dataBase;
         }
+
     }
 }

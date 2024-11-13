@@ -2,9 +2,9 @@
 
 namespace MusicManager.DBManagement
 {
-    internal abstract class DBDataEditorBase<TData> : DBManagerBase where TData : Enum
+    internal abstract class DBDataEditorBase<TData> : DBToolBase where TData : Enum
     {
-        protected DBDataEditorBase(string connectionString) : base(connectionString) { }
+        protected DBDataEditorBase(DataBase dataBase) : base(dataBase) { }
 
         /// <summary>
         /// delete the data from the DataBase, throws an exception if an error occurs
