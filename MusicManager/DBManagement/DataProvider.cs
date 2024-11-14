@@ -8,7 +8,7 @@ namespace MusicManager.DBManagement
 {
     public enum MusicDataType
     {
-        All,
+        Default,
         Id,
         Name,
         Duration,
@@ -17,20 +17,41 @@ namespace MusicManager.DBManagement
 
     public enum AuthorDataType
     {
-        All,
+        Default,
         Id,
         Name,
     }
 
+    public enum AuthorMusicDataType
+    {
+        Default,
+        Duration,
+        Style,
+    }
+
     internal class DataProvider<T> : DBToolBase where T : Enum
     {
-        private string _statePath = Path.Combine(JsonDataManager.DefaultSavePathDict[SaveDataType.Query], "musicDataProvider.json");
         private DBQueryCollection<T> _queryCollection;
 
         public DataProvider(DataBase dataBase) : base(dataBase)
         {
             _queryCollection = new DBQueryCollection<T>();
-            _queryCollection.LoadStateFromJson(_statePath).ToString();
+            SetDefaultState();
+        }
+
+        public DataProvider(DataBase dataBase, string statePath) : base(dataBase)
+        {
+            _queryCollection = new DBQueryCollection<T>();
+        
+            if (_queryCollection.LoadStateFromJson(statePath) == false)
+            {
+                SetDefaultState();
+            }
+        }
+
+        protected override void SetDefaultState()
+        {
+            _queryCollection = DefaultQueries<T>.RequestDefaultQueries();
         }
 
 

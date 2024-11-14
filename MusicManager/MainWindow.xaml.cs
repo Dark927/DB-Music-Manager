@@ -22,7 +22,6 @@ namespace MusicManager
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new MainViewModel();
         }
     }
 }

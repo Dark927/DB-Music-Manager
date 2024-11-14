@@ -1,7 +1,7 @@
 ﻿
 namespace MusicManager.DBManagement
 {
-    internal class DBToolBase
+    internal abstract class DBToolBase
     {
         private DataBase _dataBase;
 
@@ -12,5 +12,6 @@ namespace MusicManager.DBManagement
             _dataBase = dataBase;
         }
 
+        protected abstract void SetDefaultState();
     }
 }

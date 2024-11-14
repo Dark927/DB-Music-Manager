@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MusicManager.Model;
+using MusicManager.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,9 +15,26 @@ namespace MusicManager
     /// </summary>
     public partial class App : Application
     {
+        private MainSettings _settings;
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            _settings = new MainSettings();
+
+            try
+            {
+                _settings.LoadStateFromJson();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
+
+        public string RequestDBConnectionString()
+        {
+            return _settings?.ConnectionString;
+        }
+
     }
 }

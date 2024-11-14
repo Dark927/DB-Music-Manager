@@ -40,5 +40,10 @@ namespace MusicManager.DBManagement
             _queryCollection[type].Parameters = parameters;
             DataBase.SendQuery(_queryCollection[type]);
         }
+
+        protected override void SetDefaultState()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

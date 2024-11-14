@@ -18,16 +18,19 @@
         </Grid.Background>
         <Label Content="Authors" HorizontalAlignment="Left" Margin="64,22,0,0" VerticalAlignment="Top" Foreground="White"/>
         <ListBox x:Name="_authorsListBox" x:FieldModifier="private" Margin="64,48,544,206" SelectionMode="Single"
-                 ItemsSource="{Binding AuthorData}"
+                 ItemsSource="{Binding AuthorData.DefaultView}"
                  DisplayMemberPath="Name"
                  SelectedValuePath="Id"
-                 SelectedValue="{Binding SelectedAuthorId}"/>
+                 SelectedValue="{Binding SelectedAuthorId, Mode=TwoWay}"/>
         <Button Content="Delete Author" HorizontalAlignment="Left" Height="31" Margin="80,245,0,0" VerticalAlignment="Top" Width="160"/>
         <Button Content="Add Author" HorizontalAlignment="Left" Height="31" Margin="80,327,0,0" VerticalAlignment="Top" Width="160"/>
         <Button Content="Update Authors" HorizontalAlignment="Left" Height="31" Margin="80,374,0,0" VerticalAlignment="Top" Width="160"/>
 
         <Label Content="Author's Music" HorizontalAlignment="Left" Margin="298,22,0,0" VerticalAlignment="Top" Foreground="White"/>
-        <ListBox x:Name="_authorMusicListBox" x:FieldModifier="private" Margin="298,48,310,206" SelectionMode="Extended"/>
+        <ListBox x:Name="_authorMusicListBox" x:FieldModifier="private" Margin="298,48,310,206" SelectionMode="Extended"
+                 ItemsSource="{Binding AuthorMusicData.DefaultView}"
+                 DisplayMemberPath="Music"
+                 SelectedValuePath="Id"/>
         <Button Content="Delete Song" HorizontalAlignment="Left" Height="31" Margin="314,245,0,0" VerticalAlignment="Top" Width="160"/>
         <Button Content="Add Song" HorizontalAlignment="Left" Height="31" Margin="314,327,0,0" VerticalAlignment="Top" Width="160"/>
         <Button Content="Update Songs" HorizontalAlignment="Left" Height="31" Margin="314,374,0,0" VerticalAlignment="Top" Width="160"/>
@@ -36,13 +39,11 @@
         <ListBox x:Name="_allMusicListBox" x:FieldModifier="private" Margin="543,48,65,206" SelectionMode="Extended" 
                  ItemsSource="{Binding AllMusicData.DefaultView}"
                  DisplayMemberPath="Music"
-                 SelectedValuePath="Id"
-                 SelectedValue="{Binding SelectedMusicId, Mode=TwoWay}"/>
-
+                 SelectedValuePath="Id"/>
 
         <Button Content="Add Song" HorizontalAlignment="Left" Height="31" Margin="559,245,0,0" VerticalAlignment="Top" Width="160"/>
         <Button Content="Delete Song" HorizontalAlignment="Left" Height="31" Margin="559,290,0,0" VerticalAlignment="Top" Width="160"/>
-        
+
         <TextBox HorizontalAlignment="Left" Margin="80,284,0,0" TextWrapping="Wrap" Text="Enter content here.." VerticalAlignment="Top" Width="394" Height="34" VerticalContentAlignment="Center" FontSize="14"/>
 
     </Grid>

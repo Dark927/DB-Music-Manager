@@ -14,13 +14,15 @@ namespace MusicManager.Utilities
     enum SaveDataType
     {
         Query,
+        Settings,
     }
 
     internal static class JsonDataManager
     {
         static public readonly Dictionary<SaveDataType, string> DefaultSavePathDict = new()
         {
-            [SaveDataType.Query] = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "queriesData"),
+            [SaveDataType.Query] = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "queriesData.json"),
+            [SaveDataType.Settings] = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json"),
         };
 
         static private JsonSerializerOptions _options;

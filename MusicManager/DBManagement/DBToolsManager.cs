@@ -1,5 +1,6 @@
 ﻿using MusicManager.DBManagement.ManagementKits;
 using System;
+using System.Collections.Generic;
 using System.Data;
 
 
@@ -8,10 +9,7 @@ namespace MusicManager.DBManagement
     internal class DBToolsManager
     {
         private readonly DataBase _dataBase;
-
-        private DBManagementKit<MusicDataType> _musicManagementKit;
-        private DBManagementKit<AuthorDataType> _authorManagementKit;
-        private DBManagementKit<AuthorDataType> _authorMusicManagementKit;
+        private Dictionary<Type, object> _managementKitsMap;
 
         public DBToolsManager(string connectionString)
         {
@@ -22,49 +20,38 @@ namespace MusicManager.DBManagement
                 throw new ArgumentException("Connection string is invalid, DataBase == null");
             }
 
-            InitAllManagementKits();
+            _managementKitsMap = new();
         }
 
-        public DataTable RequestData<TDataType>(TDataType type) where TDataType : Enum
+        public DataTable RequestData<TDataType>(TDataType type, params int[] parameters) where TDataType : Enum
         {
             DataTable requestedData;
 
             DBManagementKit<TDataType> managementKit = GetManagementKit<TDataType>();
 
             var dataProvider = managementKit.RequestDataProvider();
-            requestedData = dataProvider.RequestData(type);
+            requestedData = dataProvider.RequestData(type, parameters);
 
             return requestedData;
         }
 
 
-        private void InitAllManagementKits()
+        private DBManagementKit<T> GetManagementKit<T>() where T : Enum
         {
-            InitManagementKit(ref _musicManagementKit);
-            InitManagementKit(ref _authorManagementKit);
-            InitManagementKit(ref _authorMusicManagementKit);
-        }
+            Type typeKey = typeof(T);
+            DBManagementKit<T> requestedKit = null;
 
-        private void InitManagementKit<T>(ref DBManagementKit<T> managementKit) where T : Enum
-        {
-            if(managementKit == null)
+            if (_managementKitsMap.ContainsKey(typeKey))
             {
-                managementKit = new DBManagementKit<T>(_dataBase);
+                requestedKit = (DBManagementKit<T>)_managementKitsMap[typeKey];
             }
-        }
-
-        private DBManagementKit<TDataType> GetManagementKit<TDataType>() where TDataType : Enum
-        {
-            if (typeof(TDataType) == typeof(MusicDataType))
+            else
             {
-                return _musicManagementKit as DBManagementKit<TDataType>;
-            }
-            else if (typeof(TDataType) == typeof(AuthorDataType))
-            {
-                return _authorManagementKit as DBManagementKit<TDataType>;
+                requestedKit = new DBManagementKit<T>(_dataBase);
+                _managementKitsMap.Add(typeKey, requestedKit);
             }
 
-            throw new InvalidOperationException($"ManagementKit does not exist for type {typeof(TDataType).Name}");
+            return requestedKit;
         }
     }
 }
