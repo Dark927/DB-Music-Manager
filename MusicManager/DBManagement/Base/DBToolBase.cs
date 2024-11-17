@@ -1,17 +1,17 @@
 ﻿
+using System;
+
 namespace MusicManager.DBManagement
 {
-    internal abstract class DBToolBase
+    internal abstract class DBToolBase<T> where T : Enum
     {
         private DataBase _dataBase;
 
-        protected DataBase DataBase { get => _dataBase; }
+        protected DataBase DB { get => _dataBase; }
 
         public DBToolBase(DataBase dataBase)
         {
             _dataBase = dataBase;
         }
-
-        protected abstract void SetDefaultState();
     }
 }

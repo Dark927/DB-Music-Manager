@@ -1,26 +1,94 @@
-﻿using System;
+﻿using MusicManager.DBManagement.Query;
+using MusicManager.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 
 namespace MusicManager.DBManagement.ManagementKits
 {
+    public enum ToolType
+    {
+        DataProvider,
+        DataRemover,
+        DataAdder,
+        DataUpdater,
+    }
+
     internal class DBManagementKit<T> where T : Enum
     {
         private DataBase _dataBase;
-        private DataProvider<T> _dataProvider;
 
-        public DBManagementKit(DataBase dataBase)
+        [JsonInclude]
+        private DBQueriesContainer<T> _queriesContainer;
+        private Dictionary<ToolType, DBToolBase<T>> _toolsDict;
+
+        public DBManagementKit(DataBase dataBase, DBQueriesContainer<T> queriesContainer = null)
         {
             _dataBase = dataBase;
+            _queriesContainer = queriesContainer;
+            _toolsDict = new Dictionary<ToolType, DBToolBase<T>>();
         }
 
-        public DataProvider<T> RequestDataProvider()
+        public void SetDefaultQueries()
         {
-            if (_dataProvider == null)
+            _queriesContainer = DefaultQueries<T>.RequestQueriesContainer();
+        }
+
+        public bool LoadStateFromJson(string path)
+        {
+            _queriesContainer = JsonDataManager.LoadObjectFromJson<DBQueriesContainer<T>>(path);
+            bool isLoaded = _queriesContainer != null;
+
+            return isLoaded;
+        }
+
+        public void SaveStateInJson(string path)
+        {
+            JsonDataManager.SaveDataToJson(_queriesContainer, path);
+        }
+
+        public DBToolBase<T> RequestTool(ToolType type)
+        {
+            DBToolBase<T> requestedTool = null;
+
+            if (_toolsDict.ContainsKey(type))
             {
-                _dataProvider = new DataProvider<T>(_dataBase);
+                requestedTool = _toolsDict[type];
+            }
+            else
+            {
+                requestedTool = CreateTool(type);
+                _toolsDict.Add(type, requestedTool);
             }
 
-            return _dataProvider;
+            return requestedTool;
+        }
+
+        private DBToolBase<T> CreateTool(ToolType type)
+        {
+            return type switch
+            {
+                ToolType.DataProvider => new DataProvider<T>(_dataBase, _queriesContainer.RequestDataQueries),
+                ToolType.DataRemover => new DataRemover<T>(_dataBase, _queriesContainer.RemoveDataQueries),
+
+                _ => throw new NotSupportedException()
+            };
+        }
+
+
+        public void AddDataProviderQuery(T type, DBQuery query)
+        {
+            if (_queriesContainer == null)
+            {
+                _queriesContainer = new DBQueriesContainer<T>();
+            }
+
+            if (_queriesContainer.RequestDataQueries.ContainKey(type))
+            {
+                _queriesContainer.RequestDataQueries.RemoveQuery(type);
+            }
+            _queriesContainer.RequestDataQueries.AddQuery(type, query);
         }
     }
 }

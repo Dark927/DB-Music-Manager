@@ -10,18 +10,13 @@ namespace MusicManager
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     /// 
-    public enum MainDataTypes
-    {
-        Author,
-        AuthorMusic,
-        AllMusic,
-    }
 
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainViewModel();
         }
     }
 }

@@ -6,53 +6,20 @@ using MusicManager.Utilities;
 
 namespace MusicManager.DBManagement
 {
-    public enum MusicDataType
-    {
-        Default,
-        Id,
-        Name,
-        Duration,
-        Style,
-    }
-
-    public enum AuthorDataType
-    {
-        Default,
-        Id,
-        Name,
-    }
-
-    public enum AuthorMusicDataType
-    {
-        Default,
-        Duration,
-        Style,
-    }
-
-    internal class DataProvider<T> : DBToolBase where T : Enum
+    internal class DataProvider<T> : DBToolBase<T> where T : Enum
     {
         private DBQueryCollection<T> _queryCollection;
 
-        public DataProvider(DataBase dataBase) : base(dataBase)
+        public DataProvider(DataBase dataBase, DBQueryCollection<T> queriesCollection) : base(dataBase)
         {
-            _queryCollection = new DBQueryCollection<T>();
-            SetDefaultState();
+            SetQueriesCollection(queriesCollection);
         }
 
-        public DataProvider(DataBase dataBase, string statePath) : base(dataBase)
+        public void SetQueriesCollection(DBQueryCollection<T> state)
         {
-            _queryCollection = new DBQueryCollection<T>();
-        
-            if (_queryCollection.LoadStateFromJson(statePath) == false)
-            {
-                SetDefaultState();
-            }
+            _queryCollection = state;
         }
 
-        protected override void SetDefaultState()
-        {
-            _queryCollection = DefaultQueries<T>.RequestDefaultQueries();
-        }
 
 
         /// <summary>
@@ -68,7 +35,7 @@ namespace MusicManager.DBManagement
             if (_queryCollection.ContainKey(type))
             {
                 _queryCollection[type].Parameters = parameters;
-                requestedData = DataBase.SendQuery(_queryCollection[type]);
+                requestedData = DB.SendQuery(_queryCollection[type]);
             }
             return requestedData;
         }
@@ -87,7 +54,7 @@ namespace MusicManager.DBManagement
             if (_queryCollection.ContainKey(type))
             {
                 _queryCollection[type].Parameters = parameters;
-                isAvailable = DataBase.SendQuery(_queryCollection[type]).DefaultView.Count != 0;
+                isAvailable = DB.SendQuery(_queryCollection[type]).DefaultView.Count != 0;
             }
 
             return isAvailable;

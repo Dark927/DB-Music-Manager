@@ -2,16 +2,9 @@
 
 namespace MusicManager.DBManagement
 {
-    internal abstract class DBDataEditorBase<TData> : DBToolBase where TData : Enum
+    internal abstract class DBDataEditorBase<TData> where TData : Enum
     {
-        protected DBDataEditorBase(DataBase dataBase) : base(dataBase) { }
 
-        /// <summary>
-        /// delete the data from the DataBase, throws an exception if an error occurs
-        /// </summary>
-        /// <param name="type">type of the data to delete</param>
-        /// <param name="parameters">additional parameters for the query, can be empty</param>
-        public abstract void DeleteData(TData type, params int[] parameters);
 
 
         /// <summary>

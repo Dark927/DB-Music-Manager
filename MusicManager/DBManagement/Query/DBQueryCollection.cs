@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using MusicManager.Utilities;
 
 
@@ -7,11 +8,17 @@ namespace MusicManager.DBManagement.Query
 {
     internal sealed class DBQueryCollection<TData> where TData : Enum
     {
+        [JsonInclude]
         private Dictionary<TData, DBQuery> _queriesDict;
 
         public DBQueryCollection()
         {
             CreateEmpty();
+        }
+
+        public DBQueryCollection(Dictionary<TData, DBQuery> queriesDict)
+        {
+            _queriesDict = queriesDict;
         }
 
         public void CreateEmpty()
@@ -37,24 +44,6 @@ namespace MusicManager.DBManagement.Query
         public bool ContainKey(TData key)
         {
             return _queriesDict.ContainsKey(key);
-        }
-
-
-        public bool LoadStateFromJson(string path)
-        {
-            _queriesDict = JsonDataManager.LoadObjectFromJson<Dictionary<TData, DBQuery>>(path);
-            bool isLoaded = _queriesDict != null;
-
-            if (!isLoaded)
-            {
-                _queriesDict = new Dictionary<TData, DBQuery>();
-            }
-            return _queriesDict != null;
-        }
-
-        public void SaveStateInJson(string path)
-        {
-            JsonDataManager.SaveDataToJson(_queriesDict, path);
         }
     }
 }

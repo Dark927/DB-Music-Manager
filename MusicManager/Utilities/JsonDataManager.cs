@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows;
 using System.IO;
-using System.Data.SqlTypes;
 
 namespace MusicManager.Utilities
 {
@@ -29,7 +24,7 @@ namespace MusicManager.Utilities
 
         static JsonDataManager()
         {
-            _options = new JsonSerializerOptions { WriteIndented = true, IncludeFields = true };
+            _options = new JsonSerializerOptions { WriteIndented = true, IncludeFields = true};
         }
 
         public static void SetSerializerOptions(JsonSerializerOptions options)
