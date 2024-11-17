@@ -71,6 +71,7 @@ namespace MusicManager.DBManagement.ManagementKits
             {
                 ToolType.DataProvider => new DataProvider<T>(_dataBase, _queriesContainer.RequestDataQueries),
                 ToolType.DataRemover => new DataRemover<T>(_dataBase, _queriesContainer.RemoveDataQueries),
+                ToolType.DataAdder => new DataAdder<T>(_dataBase, _queriesContainer.AddDataQueries),
 
                 _ => throw new NotSupportedException()
             };

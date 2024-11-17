@@ -25,18 +25,32 @@ namespace MusicManager.DBManagement.Query
             Init();
 
 
+            // ------------------------------
             // Data Provider
+            // ------------------------------
 
             AddDefaultQuery(ToolType.DataProvider, MusicType, (T)(object)MusicDataType.Default, new DBQuery(@"SELECT * FROM Music;"));
             AddDefaultQuery(ToolType.DataProvider, AuthorType, (T)(object)AuthorDataType.Default, new DBQuery(@"SELECT * FROM Author;"));
             AddDefaultQuery(ToolType.DataProvider, AuthorMusicType, (T)(object)AuthorMusicDataType.Default, new DBQuery(@"SELECT * FROM Music m inner join AuthorMusic am on m.Id = am.MusicId where am.AuthorId = @AuthorId;"));
+            
 
             // ------------------------------
-
             // Data Remover
+            // ------------------------------
+            
 
             AddDefaultQuery(ToolType.DataRemover, MusicType, (T)(object)MusicDataType.Default, new DBQuery(@"DELETE FROM Music WHERE Music.Id = @param;"));
+            AddDefaultQuery(ToolType.DataRemover, AuthorType, (T)(object)AuthorDataType.Default, new DBQuery(@"DELETE FROM Author WHERE Author.Id = @param;"));
+            AddDefaultQuery(ToolType.DataRemover, AuthorMusicType, (T)(object)AuthorMusicDataType.Default, new DBQuery(@"DELETE FROM AuthorMusic WHERE AuthorMusic.MusicId = @param;"));
 
+
+            // ------------------------------
+            // Data Adder
+            // ------------------------------
+
+            AddDefaultQuery(ToolType.DataAdder, MusicType, (T)(object)MusicDataType.Default, new DBQuery(@"INSERT INTO Music VALUES (@title, @duration, @style);"));
+            AddDefaultQuery(ToolType.DataAdder, AuthorType, (T)(object)AuthorDataType.Default, new DBQuery(@"INSERT INTO Author VALUES (@name);"));
+            AddDefaultQuery(ToolType.DataAdder, AuthorMusicType, (T)(object)AuthorDataType.Default, new DBQuery(@"INSERT INTO AuthorMusic VALUES (@authorId, @musicId);"));
         }
 
         public static DBQueryCollection<T> RequestQueriesCollection(ToolType toolType, Type dataType)

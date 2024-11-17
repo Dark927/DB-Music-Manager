@@ -23,18 +23,29 @@
                  SelectedValuePath="Id"
                  SelectedValue="{Binding SelectedAuthorId, Mode=TwoWay}"
                  />
-        <Button Content="Delete Author" HorizontalAlignment="Left" Height="31" Margin="80,245,0,0" VerticalAlignment="Top" Width="160"/>
-        <Button Content="Add Author" HorizontalAlignment="Left" Height="31" Margin="80,327,0,0" VerticalAlignment="Top" Width="160"/>
+        <Button Content="Delete Author" HorizontalAlignment="Left" Height="31" Margin="80,327,0,0" VerticalAlignment="Top" Width="160"
+                Command="{Binding DeleteCommand}"
+                CommandParameter="{x:Static local:MainDataTypes.Author}"/>
+
+        <Button Content="Add Author" HorizontalAlignment="Left" Height="31" Margin="80,245,0,0" VerticalAlignment="Top" Width="160"
+                Command="{Binding AddCommand}"
+                CommandParameter="{x:Static local:MainDataTypes.Author}"/>
         <Button Content="Update Authors" HorizontalAlignment="Left" Height="31" Margin="80,374,0,0" VerticalAlignment="Top" Width="160"/>
 
         <Label Content="Author's Music" HorizontalAlignment="Left" Margin="298,22,0,0" VerticalAlignment="Top" Foreground="White"/>
         <ListBox x:Name="_authorMusicListBox" x:FieldModifier="private" Margin="298,48,310,206" SelectionMode="Extended"
                  ItemsSource="{Binding AuthorMusicData.DefaultView}"
                  DisplayMemberPath="Title"
-                 SelectedValuePath="Id"/>
-        <Button Content="Delete Song" HorizontalAlignment="Left" Height="31" Margin="314,245,0,0" VerticalAlignment="Top" Width="160"/>
+                 SelectedValuePath="Id"
+                 SelectedValue="{Binding SelectedAuthorMusicId, Mode=TwoWay}"/>
+        <Button Content="Delete Song" HorizontalAlignment="Left" Height="31" Margin="314,327,0,0" VerticalAlignment="Top" Width="160"
+                Command="{Binding DeleteCommand}"
+                CommandParameter="{x:Static local:MainDataTypes.AuthorMusic}"/>
 
-        <Button Content="Add Song" HorizontalAlignment="Left" Height="31" Margin="314,327,0,0" VerticalAlignment="Top" Width="160"/>
+        <Button Content="Connect Song" HorizontalAlignment="Left" Height="31" Margin="314,245,0,0" VerticalAlignment="Top" Width="160"
+                Command="{Binding AddCommand}"
+                CommandParameter="{x:Static local:MainDataTypes.AuthorMusic}"/>
+
         <Button Content="Update Songs" HorizontalAlignment="Left" Height="31" Margin="314,374,0,0" VerticalAlignment="Top" Width="160"/>
 
         <Label Content="All Music" HorizontalAlignment="Left" Margin="543,22,0,0" VerticalAlignment="Top" Foreground="White"/>
@@ -44,12 +55,15 @@
                  SelectedValuePath="Id"
                  SelectedValue="{Binding SelectedMusicId, Mode=TwoWay}"/>
 
-        <Button Content="Add Song" HorizontalAlignment="Left" Height="31" Margin="559,245,0,0" VerticalAlignment="Top" Width="160"/>
+        <Button Content="Add Song" HorizontalAlignment="Left" Height="31" Margin="559,245,0,0" VerticalAlignment="Top" Width="160"
+                Command="{Binding AddCommand}"
+                CommandParameter="{x:Static local:MainDataTypes.AllMusic}"/>
+
         <Button Content="Delete Song" HorizontalAlignment="Left" Height="31" Margin="559,290,0,0" VerticalAlignment="Top" Width="160"
                 Command="{Binding DeleteCommand}"
                 CommandParameter="{x:Static local:MainDataTypes.AllMusic}"/>
 
-        <TextBox HorizontalAlignment="Left" Margin="80,284,0,0" TextWrapping="Wrap" Text="Enter content here.." VerticalAlignment="Top" Width="394" Height="34" VerticalContentAlignment="Center" FontSize="14"/>
+        <TextBox HorizontalAlignment="Left" Margin="80,284,0,0" TextWrapping="Wrap" Text="{Binding TextBoxInput}" VerticalAlignment="Top" Width="394" Height="34" VerticalContentAlignment="Center" FontSize="14"/>
 
     </Grid>
 </Window>

@@ -1,4 +1,7 @@
 ﻿using MusicManager.DBManagement;
+using MusicManager.DBManagement.ManagementKits;
+using MusicManager.Model;
+using MusicManager.Utilities;
 using System;
 using System.ComponentModel;
 using System.Data;
@@ -26,11 +29,14 @@ namespace MusicManager.ViewModel
         private DataTable _authorMusicData;
         private DataTable _authorData;
 
+        private string _textBoxInput;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         #region Properties
 
-        public ICommand DeleteCommand { get; }
+        public ICommand DeleteCommand { get; private set; }
+        public ICommand AddCommand { get; private set; }
 
         public DataTable AllMusicData
         {
@@ -88,23 +94,44 @@ namespace MusicManager.ViewModel
             }
         }
 
+        public int SelectedAuthorMusicId
+        {
+            get => _selectedAuthorMusicId;
+            set
+            {
+                if (value != _selectedAuthorMusicId)
+                {
+                    _selectedAuthorMusicId = value;
+                }
+                OnPropertyChanged(nameof(SelectedAuthorMusicId));
+            }
+        }
+
+        public string TextBoxInput
+        {
+            get => _textBoxInput;
+            set
+            {
+                if (value != _textBoxInput)
+                {
+                    _textBoxInput = value;
+                }
+                OnPropertyChanged(nameof(TextBoxInput));
+            }
+        }
+
         #endregion
+
 
         public MainViewModel()
         {
             try
             {
-                // Data init 
-
                 App currentApplication = App.Current as App;
-
                 _dbToolManager = new DBToolsManager(currentApplication.RequestDBConnectionString());
+
                 UpdateUI();
-
-                // Commands init 
-
-                DeleteCommand = new RelayCommand(DeleteData, CanDeleteData);
-
+                InitCommands();
             }
             catch (Exception ex)
             {
@@ -117,9 +144,15 @@ namespace MusicManager.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private void InitCommands()
+        {
+            DeleteCommand = new RelayCommand(DeleteData, CanUpdateData);
+            AddCommand = new RelayCommand(AddData, CanUpdateData);
+        }
+
         private void UpdateAuthorMusicData(int selectedAuthorIndex)
         {
-            AuthorMusicData = RequestRelevantData(AuthorMusicDataType.Default, selectedAuthorIndex);
+            AuthorMusicData = RequestRelevantData(AuthorMusicDataType.Default, selectedAuthorIndex.ToString());
         }
 
         private void UpdateUI()
@@ -132,7 +165,7 @@ namespace MusicManager.ViewModel
             OnPropertyChanged(nameof(SelectedMusicId));
         }
 
-        private DataTable RequestRelevantData<T>(T dataType, params int[] parameters) where T : Enum
+        private DataTable RequestRelevantData<T>(T dataType, params string[] parameters) where T : Enum
         {
             return _dbToolManager.RequestData(dataType, parameters);
         }
@@ -144,32 +177,63 @@ namespace MusicManager.ViewModel
             switch (type)
             {
                 case MainDataTypes.AllMusic:
-                    _dbToolManager.DeleteData(MusicDataType.Default, SelectedMusicId);
+                    _dbToolManager.UpdateData(ToolType.DataRemover, MusicDataType.Default, SelectedMusicId.ToString());
+                    SelectedMusicId = 0;
+                    break;
+
+                case MainDataTypes.Author:
+                    _dbToolManager.UpdateData(ToolType.DataRemover, AuthorDataType.Default, SelectedAuthorId.ToString());
+                    SelectedAuthorId = 0;
+                    break;
+
+                case MainDataTypes.AuthorMusic:
+                    _dbToolManager.UpdateData(ToolType.DataRemover, AuthorMusicDataType.Default, SelectedAuthorMusicId.ToString());
+                    SelectedAuthorMusicId = 0;
                     break;
             }
             UpdateUI();
         }
 
-        private bool CanDeleteData(object parameter)
+        private void AddData(object parameter)
+        {
+            MainDataTypes type = (MainDataTypes)parameter;
+
+            switch (type)
+            {
+                case MainDataTypes.AllMusic:
+                    if (CanAddData(MainDataTypes.AllMusic, AllMusicData, TextBoxInput))
+                    {
+                        _dbToolManager.UpdateData(ToolType.DataAdder, MusicDataType.Default, TextBoxInput, "-", "-");
+                    }
+                    break;
+
+                case MainDataTypes.Author:
+                    if (CanAddData(MainDataTypes.Author, AuthorData, TextBoxInput))
+                    {
+                        _dbToolManager.UpdateData(ToolType.DataAdder, AuthorDataType.Default, TextBoxInput);
+                    }
+                    break;
+
+                case MainDataTypes.AuthorMusic:
+                    if (CanAddData(MainDataTypes.AuthorMusic, AuthorMusicData, SelectedMusicId.ToString()))
+                    {
+                        _dbToolManager.UpdateData(ToolType.DataAdder, AuthorMusicDataType.Default, SelectedAuthorId.ToString(), SelectedMusicId.ToString());
+                    }
+                    break;
+            }
+            UpdateUI();
+        }
+
+        private bool CanAddData(MainDataTypes type, DataTable table, string uniqueInfo)
+        {
+            var dataFilteringMethod = DataFilters.GetDefaultFilteringMethod(type);
+            string filter = dataFilteringMethod.Invoke(uniqueInfo);
+            return !DataTableUtility.CheckElementExistsByFilter(table, filter);
+        }
+
+        private bool CanUpdateData(object parameter)
         {
             return (parameter is MainDataTypes);
         }
-
-
-        //public bool IsDataAvailableOfType(MainDataTypes type, params int[] parameters)
-        //{
-        //    return _dbDataProvider.IsDataAvailable(type, parameters);
-        //}
-
-        //public void DeleteDataOfType(MainDataTypes type, params int[] parameters)
-        //{
-        //    _dbDataEditor.DeleteData(type, parameters);
-        //}
-
-        //public void Initialize()
-        //{
-        //    RequestListUpdateByType(MainDataTypes.Author);
-        //    RequestListUpdateByType(MainDataTypes.AllMusic);
-        //}
     }
 }

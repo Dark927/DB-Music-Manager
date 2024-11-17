@@ -8,18 +8,10 @@ namespace MusicManager.DBManagement
 {
     internal class DataProvider<T> : DBToolBase<T> where T : Enum
     {
-        private DBQueryCollection<T> _queryCollection;
-
-        public DataProvider(DataBase dataBase, DBQueryCollection<T> queriesCollection) : base(dataBase)
+        public DataProvider(DataBase dataBase, DBQueryCollection<T> queriesCollection) : base(dataBase, queriesCollection)
         {
-            SetQueriesCollection(queriesCollection);
-        }
 
-        public void SetQueriesCollection(DBQueryCollection<T> state)
-        {
-            _queryCollection = state;
         }
-
 
 
         /// <summary>
@@ -28,14 +20,14 @@ namespace MusicManager.DBManagement
         /// <param name="type">type of the data to get</param>
         /// <param name="parameters">additional parameters for the query, can be empty</param>
         /// <returns>DataTable with the requested data from the DataBase</returns>
-        public DataTable RequestData(T type, params int[] parameters)
+        public DataTable RequestData(T type, params string[] parameters)
         {
             DataTable requestedData = null;
 
-            if (_queryCollection.ContainKey(type))
+            if (QueriesCollection.ContainKey(type))
             {
-                _queryCollection[type].Parameters = parameters;
-                requestedData = DB.SendQuery(_queryCollection[type]);
+                QueriesCollection[type].Parameters = parameters;
+                requestedData = DB.SendQuery(QueriesCollection[type]);
             }
             return requestedData;
         }
@@ -47,14 +39,14 @@ namespace MusicManager.DBManagement
         /// <param name="type">type of the data to check</param>
         /// <param name="parameters">additional parameters for the query, can be empty</param>
         /// <returns>true - if the data is available, else - false</returns>
-        public bool IsDataAvailable(T type, params int[] parameters)
+        public bool IsDataAvailable(T type, params string[] parameters)
         {
             bool isAvailable = false;
 
-            if (_queryCollection.ContainKey(type))
+            if (QueriesCollection.ContainKey(type))
             {
-                _queryCollection[type].Parameters = parameters;
-                isAvailable = DB.SendQuery(_queryCollection[type]).DefaultView.Count != 0;
+                QueriesCollection[type].Parameters = parameters;
+                isAvailable = DB.SendQuery(QueriesCollection[type]).DefaultView.Count != 0;
             }
 
             return isAvailable;

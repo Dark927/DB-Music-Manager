@@ -2,8 +2,10 @@
 using MusicManager.DBManagement.Query;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.IO;
+using System.Windows;
 
 
 namespace MusicManager.DBManagement
@@ -36,6 +38,8 @@ namespace MusicManager.DBManagement
         private readonly DataBase _dataBase;
         private Dictionary<Type, object> _managementKitsMap;
 
+        private delegate void ToolOperationDelegate<TDataType>(DBToolBase<TDataType> tool, TDataType dataType, params string[] parameters) where TDataType : Enum;
+
         public DBToolsManager(string connectionString)
         {
             _dataBase = new DataBase(connectionString);
@@ -48,7 +52,7 @@ namespace MusicManager.DBManagement
             _managementKitsMap = new();
         }
 
-        public DataTable RequestData<TDataType>(TDataType type, params int[] parameters) where TDataType : Enum
+        public DataTable RequestData<TDataType>(TDataType type, params string[] parameters) where TDataType : Enum
         {
             DataTable requestedData;
 
@@ -60,12 +64,20 @@ namespace MusicManager.DBManagement
             return requestedData;
         }
 
-        public void DeleteData<TDataType>(TDataType type, params int[] parameters) where TDataType: Enum
+        public void UpdateData<TDataType>(ToolType toolType, TDataType dataType, params string[] parameters) where TDataType : Enum
         {
-            DBManagementKit<TDataType> managementKit = GetManagementKit<TDataType>();
+            try
+            {
+                DBManagementKit<TDataType> managementKit = GetManagementKit<TDataType>();
+                var tool = managementKit.RequestTool(toolType);
+                var operation = GetToolOperation<TDataType>(toolType);
 
-            var dataRemover = (DataRemover<TDataType>)managementKit.RequestTool(ToolType.DataRemover);
-            dataRemover.DeleteData(type, parameters);
+                operation.Invoke(tool, dataType, parameters);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         public void RegisterProviderQuery<T>(T type, DBQuery query) where T : Enum
@@ -80,6 +92,28 @@ namespace MusicManager.DBManagement
             managementKit.SaveStateInJson(kitDefaultPath);
         }
 
+        private ToolOperationDelegate<TDataType> GetToolOperation<TDataType>(ToolType toolType) where TDataType : Enum
+        {
+            return toolType switch
+            {
+                ToolType.DataRemover => DeleteData,
+                ToolType.DataAdder => AddData,
+
+                _ => throw new NotImplementedException()
+            };
+        }
+
+        private void DeleteData<TDataType>(DBToolBase<TDataType> tool, TDataType dataType, params string[] parameters) where TDataType : Enum
+        {
+            DataRemover<TDataType> dataRemover = (DataRemover<TDataType>)tool;
+            dataRemover.DeleteData(dataType, parameters);
+        }
+
+        private void AddData<TDataType>(DBToolBase<TDataType> tool, TDataType dataType, params string[] parameters) where TDataType : Enum
+        {
+            DataAdder<TDataType> dataAdder = (DataAdder<TDataType>)tool;
+            dataAdder.AddData(dataType, parameters);
+        }
 
         private DBManagementKit<T> GetManagementKit<T>() where T : Enum
         {

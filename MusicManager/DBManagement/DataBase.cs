@@ -37,17 +37,17 @@ namespace MusicManager.DBManagement
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this.ToString() + " " + ex.Message);
+                //MessageBox.Show(this.ToString() + " " + ex.Message);
                 return resultDataTable;
             }
         }
 
-        public DBQuery CreateQuery(string text, params int[] parameters)
+        public DBQuery CreateQuery(string text, params string[] parameters)
         {
             return new DBQuery(text, parameters);
         }
 
-        public DataTable CreateAndSendQuery(string text, params int[] parameters)
+        public DataTable CreateAndSendQuery(string text, params string[] parameters)
         {
             return SendQuery(new DBQuery(text, parameters));
         }

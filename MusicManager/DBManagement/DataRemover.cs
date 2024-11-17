@@ -6,30 +6,23 @@ namespace MusicManager.DBManagement
 {
     class DataRemover<T> : DBToolBase<T> where T : Enum
     {
-        private DBQueryCollection<T> _queryCollection;
 
-        public DataRemover(DataBase dataBase, DBQueryCollection<T> queriesCollection) : base(dataBase)
+        public DataRemover(DataBase dataBase, DBQueryCollection<T> queriesCollection) : base(dataBase, queriesCollection)
         {
-            SetQueriesCollection(queriesCollection);
-        }
 
-        public void SetQueriesCollection(DBQueryCollection<T> state)
-        {
-            _queryCollection = state;
         }
-
 
         /// <summary>
         /// delete the data from the DataBase, throws an exception if an error occurs
         /// </summary>
         /// <param name="type">type of the data to delete</param>
         /// <param name="parameters">additional parameters for the query, can be empty</param>
-        public void DeleteData(T type, params int[] parameters)
+        public void DeleteData(T type, params string[] parameters)
         {
-            if (_queryCollection.ContainKey(type))
+            if (QueriesCollection.ContainKey(type))
             {
-                _queryCollection[type].Parameters = parameters;
-                DB.SendQuery(_queryCollection[type]);
+                QueriesCollection[type].Parameters = parameters;
+                DB.SendQuery(QueriesCollection[type]);
             }
 
         }
