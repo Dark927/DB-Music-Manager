@@ -24,6 +24,11 @@ namespace MusicManager.Model
             return $"MusicId = '{musicId}'";
         }
 
+        public static string GetFilterById(string id)
+        {
+            return $"Id = '{id}'";
+        }
+
         public static Func<string, string> GetDefaultFilteringMethod(MainDataTypes type)
         {
             return type switch

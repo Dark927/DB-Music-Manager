@@ -9,11 +9,16 @@ namespace MusicManager.Utilities
 {
     static class DataTableUtility
     {
-        public static bool CheckElementExistsByFilter(DataTable table, string filter)
+        public static bool CheckElementExistsByFilter(this DataTable table, string filter)
         {
             DataRow[] rows = table.Select(filter);
 
             return rows.Length > 0;
+        }
+
+        public static DataRow GetFirstElementByFilter(this DataTable table, string filter)
+        {
+            return table.Select(filter).FirstOrDefault();
         }
     }
 }

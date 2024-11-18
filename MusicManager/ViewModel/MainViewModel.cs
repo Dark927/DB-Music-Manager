@@ -3,9 +3,12 @@ using MusicManager.DBManagement.ManagementKits;
 using MusicManager.Model;
 using MusicManager.Utilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace MusicManager.ViewModel
@@ -19,6 +22,12 @@ namespace MusicManager.ViewModel
 
     public class MainViewModel : INotifyPropertyChanged
     {
+        // -------------------------------------------------------------------
+        // Fields
+        // -------------------------------------------------------------------
+
+        #region Fields 
+
         private DBToolsManager _dbToolManager;
 
         private int _selectedAuthorId = 0;
@@ -31,7 +40,21 @@ namespace MusicManager.ViewModel
 
         private string _textBoxInput;
 
+        private Dictionary<MainDataTypes, string> _mainInfoColumnsDict = new Dictionary<MainDataTypes, string>
+        {
+            [MainDataTypes.AllMusic] = "Title",
+            [MainDataTypes.AuthorMusic] = "Title",
+            [MainDataTypes.Author] = "Name",
+        };
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+
+        // -------------------------------------------------------------------
+        // Properties
+        // -------------------------------------------------------------------
 
         #region Properties
 
@@ -77,6 +100,7 @@ namespace MusicManager.ViewModel
                     _selectedAuthorId = value;
                     UpdateAuthorMusicData(_selectedAuthorId);
                 }
+                DisplaySelectedItemToTB(AuthorData, SelectedAuthorId, MainDataTypes.Author);
                 OnPropertyChanged(nameof(SelectedAuthorId));
             }
         }
@@ -90,6 +114,7 @@ namespace MusicManager.ViewModel
                 {
                     _selectedMusicId = value;
                 }
+                DisplaySelectedItemToTB(AllMusicData, SelectedMusicId, MainDataTypes.AllMusic);
                 OnPropertyChanged(nameof(SelectedMusicId));
             }
         }
@@ -103,6 +128,7 @@ namespace MusicManager.ViewModel
                 {
                     _selectedAuthorMusicId = value;
                 }
+                DisplaySelectedItemToTB(AuthorMusicData, SelectedAuthorMusicId, MainDataTypes.AuthorMusic);
                 OnPropertyChanged(nameof(SelectedAuthorMusicId));
             }
         }
@@ -123,10 +149,17 @@ namespace MusicManager.ViewModel
         #endregion
 
 
+        // -------------------------------------------------------------------
+        // Methods
+        // -------------------------------------------------------------------
+
+        #region Methods
+
         public MainViewModel()
         {
             try
             {
+                ListBox newLs = new ListBox();
                 App currentApplication = App.Current as App;
                 _dbToolManager = new DBToolsManager(currentApplication.RequestDBConnectionString());
 
@@ -228,12 +261,27 @@ namespace MusicManager.ViewModel
         {
             var dataFilteringMethod = DataFilters.GetDefaultFilteringMethod(type);
             string filter = dataFilteringMethod.Invoke(uniqueInfo);
-            return !DataTableUtility.CheckElementExistsByFilter(table, filter);
+            return !table.CheckElementExistsByFilter(filter);
         }
 
         private bool CanUpdateData(object parameter)
         {
             return (parameter is MainDataTypes);
         }
+
+        private void DisplaySelectedItemToTB(DataTable table, int selectedId, MainDataTypes type)
+        {
+            DataRow dataRow = table.GetFirstElementByFilter(DataFilters.GetFilterById(selectedId.ToString()));
+
+            string mainValueName = _mainInfoColumnsDict[type];
+
+            if (dataRow != null)
+            {
+                string selectedValue = dataRow.Field<string>(mainValueName);
+                TextBoxInput = selectedValue;
+            }
+        }
+
+        #endregion
     }
 }
