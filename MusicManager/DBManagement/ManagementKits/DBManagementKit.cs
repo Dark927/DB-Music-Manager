@@ -12,7 +12,7 @@ namespace MusicManager.DBManagement.ManagementKits
         DataProvider,
         DataRemover,
         DataAdder,
-        DataUpdater,
+        DataReplacer,
     }
 
     internal class DBManagementKit<T> where T : Enum
@@ -72,6 +72,7 @@ namespace MusicManager.DBManagement.ManagementKits
                 ToolType.DataProvider => new DataProvider<T>(_dataBase, _queriesContainer.RequestDataQueries),
                 ToolType.DataRemover => new DataRemover<T>(_dataBase, _queriesContainer.RemoveDataQueries),
                 ToolType.DataAdder => new DataAdder<T>(_dataBase, _queriesContainer.AddDataQueries),
+                ToolType.DataReplacer => new DataReplacer<T>(_dataBase, _queriesContainer.ReplaceDataQueries),
 
                 _ => throw new NotSupportedException()
             };

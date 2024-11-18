@@ -14,7 +14,7 @@ namespace MusicManager.DBManagement
     {
         Default,
         Id,
-        Name,
+        Title,
         Duration,
         Style,
     }
@@ -98,6 +98,7 @@ namespace MusicManager.DBManagement
             {
                 ToolType.DataRemover => DeleteData,
                 ToolType.DataAdder => AddData,
+                ToolType.DataReplacer => ReplaceData,
 
                 _ => throw new NotImplementedException()
             };
@@ -113,6 +114,12 @@ namespace MusicManager.DBManagement
         {
             DataAdder<TDataType> dataAdder = (DataAdder<TDataType>)tool;
             dataAdder.AddData(dataType, parameters);
+        }
+
+        private void ReplaceData<TDataType>(DBToolBase<TDataType> tool, TDataType dataType, params string[] parameters) where TDataType : Enum
+        {
+            DataReplacer<TDataType> dataReplacer = (DataReplacer<TDataType>)tool;
+            dataReplacer.ReplaceData(dataType, parameters);
         }
 
         private DBManagementKit<T> GetManagementKit<T>() where T : Enum

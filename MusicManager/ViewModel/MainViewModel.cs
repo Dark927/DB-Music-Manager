@@ -60,6 +60,7 @@ namespace MusicManager.ViewModel
 
         public ICommand DeleteCommand { get; private set; }
         public ICommand AddCommand { get; private set; }
+        public ICommand ReplaceCommand { get; private set; }
 
         public DataTable AllMusicData
         {
@@ -98,6 +99,7 @@ namespace MusicManager.ViewModel
                 if (value != _selectedAuthorId)
                 {
                     _selectedAuthorId = value;
+                    SelectedAuthorMusicId = 0;
                     UpdateAuthorMusicData(_selectedAuthorId);
                 }
                 DisplaySelectedItemToTB(AuthorData, SelectedAuthorId, MainDataTypes.Author);
@@ -181,6 +183,7 @@ namespace MusicManager.ViewModel
         {
             DeleteCommand = new RelayCommand(DeleteData, CanUpdateData);
             AddCommand = new RelayCommand(AddData, CanUpdateData);
+            ReplaceCommand = new RelayCommand(ReplaceData, CanUpdateData);
         }
 
         private void UpdateAuthorMusicData(int selectedAuthorIndex)
@@ -234,32 +237,53 @@ namespace MusicManager.ViewModel
             switch (type)
             {
                 case MainDataTypes.AllMusic:
-                    if (CanAddData(MainDataTypes.AllMusic, AllMusicData, TextBoxInput))
-                    {
-                        _dbToolManager.UpdateData(ToolType.DataAdder, MusicDataType.Default, TextBoxInput, "-", "-");
-                    }
+                    AddConcreteDataType(MusicDataType.Default, AllMusicData, TextBoxInput, "-", "-");
                     break;
 
                 case MainDataTypes.Author:
-                    if (CanAddData(MainDataTypes.Author, AuthorData, TextBoxInput))
-                    {
-                        _dbToolManager.UpdateData(ToolType.DataAdder, AuthorDataType.Default, TextBoxInput);
-                    }
+                    AddConcreteDataType(AuthorDataType.Default, AuthorData, TextBoxInput);
                     break;
 
                 case MainDataTypes.AuthorMusic:
-                    if (CanAddData(MainDataTypes.AuthorMusic, AuthorMusicData, SelectedMusicId.ToString()))
-                    {
-                        _dbToolManager.UpdateData(ToolType.DataAdder, AuthorMusicDataType.Default, SelectedAuthorId.ToString(), SelectedMusicId.ToString());
-                    }
+                    AddConcreteDataType(AuthorMusicDataType.Default, AuthorMusicData, SelectedMusicId.ToString(), SelectedAuthorId.ToString());
                     break;
             }
             UpdateUI();
         }
 
-        private bool CanAddData(MainDataTypes type, DataTable table, string uniqueInfo)
+        private void ReplaceData(object parameter)
         {
-            var dataFilteringMethod = DataFilters.GetDefaultFilteringMethod(type);
+            MainDataTypes type = (MainDataTypes)parameter;
+
+            switch (type)
+            {
+                case MainDataTypes.AllMusic:
+                    _dbToolManager.UpdateData(ToolType.DataReplacer, MusicDataType.Default, TextBoxInput, SelectedMusicId.ToString());
+                    break;
+
+                case MainDataTypes.Author:
+                    _dbToolManager.UpdateData(ToolType.DataReplacer, AuthorDataType.Default, TextBoxInput, SelectedAuthorId.ToString());
+                    break;
+
+                case MainDataTypes.AuthorMusic:
+                    break;
+            }
+            UpdateUI();
+        }
+
+
+        private void AddConcreteDataType<T>(T concreteType, DataTable targetTable, params string[] data) where T : Enum
+        {
+            if (CanAddData(typeof(T), targetTable, data.FirstOrDefault()))
+            {
+                _dbToolManager.UpdateData(ToolType.DataAdder, concreteType, data);
+            }
+        }
+
+
+        private bool CanAddData<T>(T dataType, DataTable table, string uniqueInfo) where T : Type
+        {
+            var dataFilteringMethod = DataFilters.GetDefaultFilteringMethod(dataType);
             string filter = dataFilteringMethod.Invoke(uniqueInfo);
             return !table.CheckElementExistsByFilter(filter);
         }

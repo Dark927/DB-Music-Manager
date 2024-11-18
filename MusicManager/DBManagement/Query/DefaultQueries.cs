@@ -50,7 +50,16 @@ namespace MusicManager.DBManagement.Query
 
             AddDefaultQuery(ToolType.DataAdder, MusicType, (T)(object)MusicDataType.Default, new DBQuery(@"INSERT INTO Music VALUES (@title, @duration, @style);"));
             AddDefaultQuery(ToolType.DataAdder, AuthorType, (T)(object)AuthorDataType.Default, new DBQuery(@"INSERT INTO Author VALUES (@name);"));
-            AddDefaultQuery(ToolType.DataAdder, AuthorMusicType, (T)(object)AuthorDataType.Default, new DBQuery(@"INSERT INTO AuthorMusic VALUES (@authorId, @musicId);"));
+            AddDefaultQuery(ToolType.DataAdder, AuthorMusicType, (T)(object)AuthorDataType.Default, new DBQuery(@"INSERT INTO AuthorMusic VALUES (@musicId, @authorId);"));
+        
+        
+            // ------------------------------
+            // Data Replacer
+            // ------------------------------
+
+            AddDefaultQuery(ToolType.DataReplacer, MusicType, (T)(object)MusicDataType.Default, new DBQuery(@"UPDATE Music SET Title = @title WHERE Id = @id;"));
+            AddDefaultQuery(ToolType.DataReplacer, AuthorType, (T)(object)AuthorDataType.Default, new DBQuery(@"UPDATE Author SET Name = @name WHERE Id = @id;"));
+
         }
 
         public static DBQueryCollection<T> RequestQueriesCollection(ToolType toolType, Type dataType)
@@ -86,7 +95,7 @@ namespace MusicManager.DBManagement.Query
                 ToolType.DataProvider => queriesCollection.RequestDataQueries,
                 ToolType.DataRemover => queriesCollection.RemoveDataQueries,
                 ToolType.DataAdder => queriesCollection.AddDataQueries,
-                ToolType.DataUpdater => queriesCollection.UpdateDataQueries,
+                ToolType.DataReplacer => queriesCollection.ReplaceDataQueries,
 
                 _ => throw new NotImplementedException()
             };

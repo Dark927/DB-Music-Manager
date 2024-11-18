@@ -1,4 +1,5 @@
-﻿using MusicManager.ViewModel;
+﻿using MusicManager.DBManagement;
+using MusicManager.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,14 +30,13 @@ namespace MusicManager.Model
             return $"Id = '{id}'";
         }
 
-        public static Func<string, string> GetDefaultFilteringMethod(MainDataTypes type)
+        public static Func<string, string> GetDefaultFilteringMethod<T>(T type) where T : Type
         {
             return type switch
             {
-                MainDataTypes.Author => GetAuthorsFilterByName,
-                MainDataTypes.AllMusic => GetMusicFilterByTitle,
-                MainDataTypes.AuthorMusic => GetAuthorMusicFilterById,
-
+                { } when type == typeof(AuthorDataType) => GetAuthorsFilterByName,
+                { } when type == typeof(MusicDataType) => GetMusicFilterByTitle,
+                { } when type == typeof(AuthorMusicDataType) => GetAuthorMusicFilterById,
                 _ => throw new NotImplementedException()
             };
         }

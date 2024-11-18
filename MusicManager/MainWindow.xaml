@@ -3,67 +3,282 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MusicManager.ViewModel"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:MusicManager.ViewModel" 
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" ResizeMode="CanMinimize">
-    <Window.DataContext>
-        <local:MainViewModel />
-    </Window.DataContext>
+        Title="MainWindow" Height="475" Width="800" MinHeight="475" MinWidth="675" WindowStartupLocation="CenterScreen">
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <!--Resources-->
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+    <Window.Resources>
+
+        <!--Grid Settings-->
+
+        <sys:Double x:Key="MinButtonRowsHeight">25</sys:Double>
+        <sys:Double x:Key="MaxButtonRowsHeight">75</sys:Double>
+
+        <!--List Box Settings-->
+
+        <CornerRadius x:Key="SelectionCornerRadius">15</CornerRadius>
+        <Thickness x:Key="SelectionMargin">25,5</Thickness>
+
+
+        <!--Buttons Settings-->
+
+        <CornerRadius x:Key="ButtonsCornerRadius">5</CornerRadius>
+        <Thickness x:Key="ButtonsMargin">50, 7.5</Thickness>
+        <Color x:Key="ButtonFocusedColor">#00cc00</Color>
+
+        <!--Templates-->
+
+
+
+    </Window.Resources>
+
     <Grid>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                 <GradientStop Color="Black" Offset="0"/>
-                <GradientStop Color="#FF482222" Offset="1"/>
+                <GradientStop Color="#FF1A4C16" Offset="1"/>
             </LinearGradientBrush>
         </Grid.Background>
-        <Label Content="Authors" HorizontalAlignment="Left" Margin="64,22,0,0" VerticalAlignment="Top" Foreground="White"/>
-        <ListBox x:Name="_authorsListBox" x:FieldModifier="private" Margin="64,48,544,206" SelectionMode="Single"
-                 ItemsSource="{Binding AuthorData.DefaultView}"
-                 DisplayMemberPath="Name"
-                 SelectedValuePath="Id"
-                 SelectedValue="{Binding SelectedAuthorId, Mode=TwoWay}"
-                 />
-        <Button Content="Delete Author" HorizontalAlignment="Left" Height="31" Margin="80,327,0,0" VerticalAlignment="Top" Width="160"
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition MaxHeight="10"/>
+            <RowDefinition MaxHeight="30"/>
+            <RowDefinition MinHeight="175" Height="*" MaxHeight="600"/>
+            <RowDefinition MinHeight="{StaticResource MinButtonRowsHeight}" Height="*" MaxHeight="{StaticResource MaxButtonRowsHeight}"/>
+            <RowDefinition MinHeight="{StaticResource MinButtonRowsHeight}" Height="*" MaxHeight="{StaticResource MaxButtonRowsHeight}"/>
+            <RowDefinition MinHeight="{StaticResource MinButtonRowsHeight}" Height="*" MaxHeight="{StaticResource MaxButtonRowsHeight}"/>
+            <RowDefinition MinHeight="{StaticResource MinButtonRowsHeight}" Height="*" MaxHeight="{StaticResource MaxButtonRowsHeight}"/>
+            <RowDefinition MaxHeight="20"/>
+        </Grid.RowDefinitions>
+
+
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+        <!--Authors List-->
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        <Label Grid.Row="1" Grid.Column="1" Content="Authors" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" FontWeight="Bold" FontSize="14"/>
+
+        <Border Grid.Row="2" Grid.Column="1" BorderBrush="White" CornerRadius="{StaticResource SelectionCornerRadius}" Margin="{StaticResource SelectionMargin}" Padding="15" 
+                Background="White">
+            <ListBox x:Name="_authorsListBox" x:FieldModifier="private"  SelectionMode="Single" BorderBrush="Transparent"
+                    ItemsSource="{Binding AuthorData.DefaultView}"
+                    DisplayMemberPath="Name"
+                    SelectedValuePath="Id"
+                    SelectedValue="{Binding SelectedAuthorId, Mode=TwoWay}" />
+        </Border>
+
+
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+        <!--Author's Music List-->
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        <Label Grid.Row="1" Grid.Column="2" Content="Author's Music" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" FontWeight="Bold" FontSize="14"/>
+
+        <Border Grid.Row="2" Grid.Column="2" BorderBrush="White" CornerRadius="{StaticResource SelectionCornerRadius}" Margin="{StaticResource SelectionMargin}" Padding="15" 
+                Background="White">
+            <ListBox x:Name="_authorMusicListBox" x:FieldModifier="private" SelectionMode="Extended" BorderBrush="Transparent"
+                    ItemsSource="{Binding AuthorMusicData.DefaultView}"
+                    DisplayMemberPath="Title"
+                    SelectedValuePath="Id"
+                    SelectedValue="{Binding SelectedAuthorMusicId, Mode=TwoWay}"/>
+        </Border>
+
+
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+        <!--All Music List-->
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        <Label Grid.Row="1" Grid.Column="3" Content="All Music" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" FontWeight="Bold" FontSize="14"/>
+
+        <Border Grid.Row="2" Grid.Column="3" BorderBrush="White" CornerRadius="{StaticResource SelectionCornerRadius}" Margin="{StaticResource SelectionMargin}" Padding="15" 
+                Background="White">
+            <ListBox x:Name="_allMusicListBox" x:FieldModifier="private" SelectionMode="Extended" BorderBrush="Transparent"
+                    ItemsSource="{Binding AllMusicData.DefaultView}"
+                    DisplayMemberPath="Title"
+                    SelectedValuePath="Id"
+                    SelectedValue="{Binding SelectedMusicId, Mode=TwoWay}"/>
+        </Border>
+
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+        <!--Add Buttons-->
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        <!--Add Author-->
+
+        <Border Grid.Row="3" Grid.Column="1" BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}" 
+                Background="White">
+            <Button Content="Add Author" 
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                    Padding="0" Margin="1"
+                    Background="Transparent" BorderBrush="Transparent"
+                    FontWeight="Bold"
+                    Command="{Binding AddCommand}"
+                    CommandParameter="{x:Static local:MainDataTypes.Author}"/>
+        </Border>
+
+
+        <!--Add Author Music-->
+
+        <Border Grid.Row="3" Grid.Column="2" BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}" 
+                Background="Linen" Cursor="Hand">
+            <Button Content="Connect Song" 
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                    Padding="0" Margin="1"
+                    Background="Transparent" BorderBrush="Transparent"
+                    FontWeight="Bold"
+                    Command="{Binding AddCommand}"
+                    CommandParameter="{x:Static local:MainDataTypes.AuthorMusic}" Focusable="True"/>
+        </Border>
+
+
+        <!--Add Music-->
+
+        <Border Grid.Row="3" Grid.Column="3" BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}" 
+                Background="White" Cursor="Hand">
+            <Button Content="Add Song" 
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                    Padding="0" Margin="1"
+                    Background="Transparent" BorderBrush="Transparent"
+                    FontWeight="Bold"
+                    Command="{Binding AddCommand}"
+                    CommandParameter="{x:Static local:MainDataTypes.AllMusic}" Focusable="True"/>
+        </Border>
+
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+        <!--Text Box-->
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        <Border Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" 
+                BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}"  Padding="5"
+                Background="White" Cursor="Hand">
+            <TextBox  
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Background="Transparent" BorderBrush="Transparent" BorderThickness="0"
+                TextWrapping="Wrap" Text="{Binding TextBoxInput}"
+                VerticalContentAlignment="Center" FontSize="14"/>
+        </Border>
+
+
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+        <!--Delete Buttons-->
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        <!--Delete Author-->
+
+        <Border Grid.Row="6" Grid.Column="1" BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}" 
+                Background="#FFFFA2A2" Cursor="Hand">
+            <Button Content="Delete Author"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                Padding="0" Margin="1"
+                Background="Transparent" BorderBrush="Transparent"
+                FontWeight="Bold"
                 Command="{Binding DeleteCommand}"
                 CommandParameter="{x:Static local:MainDataTypes.Author}"/>
+        </Border>
 
-        <Button Content="Add Author" HorizontalAlignment="Left" Height="31" Margin="80,245,0,0" VerticalAlignment="Top" Width="160"
-                Command="{Binding AddCommand}"
+
+        <!--Delete Author's Song-->
+
+        <Border Grid.Row="6" Grid.Column="2" BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}" 
+                Background="#FFFF7D7D" Cursor="Hand">
+            <Button Content="Delete Author's Song"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                Padding="0" Margin="1"
+                Background="Transparent" BorderBrush="Transparent"
+                FontWeight="Bold"
+                Command="{Binding DeleteCommand}"
+                CommandParameter="{x:Static local:MainDataTypes.AuthorMusic}"/>
+        </Border>
+
+
+        <!--Delete Music-->
+
+        <Border Grid.Row="6" Grid.Column="3" BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}" 
+                Background="#FFFFA2A2" Cursor="Hand">
+            <Button Content="Delete Song"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                Padding="0" Margin="1"
+                Background="Transparent" BorderBrush="Transparent"
+                FontWeight="Bold"
+                Command="{Binding DeleteCommand}"
+                CommandParameter="{x:Static local:MainDataTypes.AllMusic}"/>
+        </Border>
+
+
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+        <!--Update Buttons-->
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        <!--Replace Author Name-->
+
+        <Border Grid.Row="5" Grid.Column="1" BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}" 
+                Background="#FFFFFA87" Cursor="Hand">
+            <Button Content="Update Author"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                Padding="0" Margin="1"
+                Background="Transparent" BorderBrush="Transparent"
+                FontWeight="Bold"
+                Command="{Binding ReplaceCommand}"
                 CommandParameter="{x:Static local:MainDataTypes.Author}"/>
-        <Button Content="Update Authors" HorizontalAlignment="Left" Height="31" Margin="80,374,0,0" VerticalAlignment="Top" Width="160"/>
+        </Border>
 
-        <Label Content="Author's Music" HorizontalAlignment="Left" Margin="298,22,0,0" VerticalAlignment="Top" Foreground="White"/>
-        <ListBox x:Name="_authorMusicListBox" x:FieldModifier="private" Margin="298,48,310,206" SelectionMode="Extended"
-                 ItemsSource="{Binding AuthorMusicData.DefaultView}"
-                 DisplayMemberPath="Title"
-                 SelectedValuePath="Id"
-                 SelectedValue="{Binding SelectedAuthorMusicId, Mode=TwoWay}"/>
-        <Button Content="Delete Song" HorizontalAlignment="Left" Height="31" Margin="314,327,0,0" VerticalAlignment="Top" Width="160"
-                Command="{Binding DeleteCommand}"
-                CommandParameter="{x:Static local:MainDataTypes.AuthorMusic}"/>
 
-        <Button Content="Connect Song" HorizontalAlignment="Left" Height="31" Margin="314,245,0,0" VerticalAlignment="Top" Width="160"
-                Command="{Binding AddCommand}"
-                CommandParameter="{x:Static local:MainDataTypes.AuthorMusic}"/>
+        <!--Replace Music Name-->
 
-        <Button Content="Update Songs" HorizontalAlignment="Left" Height="31" Margin="314,374,0,0" VerticalAlignment="Top" Width="160"/>
-
-        <Label Content="All Music" HorizontalAlignment="Left" Margin="543,22,0,0" VerticalAlignment="Top" Foreground="White"/>
-        <ListBox x:Name="_allMusicListBox" x:FieldModifier="private" Margin="543,48,65,206" SelectionMode="Extended" 
-                 ItemsSource="{Binding AllMusicData.DefaultView}"
-                 DisplayMemberPath="Title"
-                 SelectedValuePath="Id"
-                 SelectedValue="{Binding SelectedMusicId, Mode=TwoWay}"/>
-
-        <Button Content="Add Song" HorizontalAlignment="Left" Height="31" Margin="559,245,0,0" VerticalAlignment="Top" Width="160"
-                Command="{Binding AddCommand}"
+        <Border Grid.Row="5" Grid.Column="3" BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}" 
+                Background="#FFFFFA87" Cursor="Hand">
+            <Button Content="Update Song"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                Padding="0" Margin="1"
+                Background="Transparent" BorderBrush="Transparent"
+                FontWeight="Bold"
+                Command="{Binding ReplaceCommand}"
                 CommandParameter="{x:Static local:MainDataTypes.AllMusic}"/>
+        </Border>
 
-        <Button Content="Delete Song" HorizontalAlignment="Left" Height="31" Margin="559,290,0,0" VerticalAlignment="Top" Width="160"
-                Command="{Binding DeleteCommand}"
-                CommandParameter="{x:Static local:MainDataTypes.AllMusic}"/>
 
-        <TextBox HorizontalAlignment="Left" Margin="80,284,0,0" TextWrapping="Wrap" Text="{Binding TextBoxInput}" VerticalAlignment="Top" Width="394" Height="34" VerticalContentAlignment="Center" FontSize="14"/>
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+        <!--Display Details About Song-->
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
+        <Border Grid.Row="4" Grid.Column="3" BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}" 
+                Background="#FFA5FFEC" Cursor="Hand">
+            <Button Content="Song Details"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                Padding="0" Margin="1"
+                Background="Transparent" BorderBrush="Transparent"
+                FontWeight="Bold"
+                Command=""
+                CommandParameter=""/>
+        </Border>
+
+
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+        <!--Display All Song's Authors-->
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        <Border Grid.Row="5" Grid.Column="2" BorderBrush="White" CornerRadius="{StaticResource ButtonsCornerRadius}" Margin="{StaticResource ButtonsMargin}" 
+                Background="#FFA5FFEC" Cursor="Hand">
+            <Button Content="All Authors"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                Padding="0" Margin="1"
+                Background="Transparent" BorderBrush="Transparent"
+                FontWeight="Bold"
+                Command=""
+                CommandParameter=""/>
+        </Border>
     </Grid>
 </Window>

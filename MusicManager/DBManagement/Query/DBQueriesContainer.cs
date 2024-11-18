@@ -8,7 +8,7 @@ namespace MusicManager.DBManagement.Query
         public DBQueryCollection<T> RequestDataQueries { get; set; }
         public DBQueryCollection<T> AddDataQueries { get; set; }
         public DBQueryCollection<T> RemoveDataQueries { get; set; }
-        public DBQueryCollection<T> UpdateDataQueries { get; set; }
+        public DBQueryCollection<T> ReplaceDataQueries { get; set; }
 
         public DBQueriesContainer()
         {
@@ -20,7 +20,7 @@ namespace MusicManager.DBManagement.Query
             RequestDataQueries = new DBQueryCollection<T>();
             AddDataQueries = new DBQueryCollection<T>();
             RemoveDataQueries = new DBQueryCollection<T>();
-            UpdateDataQueries = new DBQueryCollection<T>();
+            ReplaceDataQueries = new DBQueryCollection<T>();
         }
     }
 }
