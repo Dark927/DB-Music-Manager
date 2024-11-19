@@ -1,11 +1,4 @@
 ﻿using MusicManager.Model;
-using MusicManager.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace MusicManager
@@ -20,15 +13,6 @@ namespace MusicManager
         {
             base.OnStartup(e);
             _settings = new MainSettings();
-
-            try
-            {
-                _settings.LoadStateFromJson();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
         }
 
         public string RequestDBConnectionString()

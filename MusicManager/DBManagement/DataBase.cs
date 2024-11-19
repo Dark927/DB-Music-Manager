@@ -1,9 +1,9 @@
-﻿using System;
-using System.Data.SqlClient;
+﻿using MusicManager.DBManagement.Query;
+using System;
 using System.Data;
-using System.Windows;
+using System.Data.SqlClient;
 using System.Text.RegularExpressions;
-using MusicManager.DBManagement.Query;
+using System.Windows;
 
 namespace MusicManager.DBManagement
 {
@@ -37,7 +37,7 @@ namespace MusicManager.DBManagement
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(this.ToString() + " " + ex.Message);
+                MessageBox.Show(this.ToString() + " " + ex.Message);
                 return resultDataTable;
             }
         }

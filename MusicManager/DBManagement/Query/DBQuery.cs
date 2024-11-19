@@ -1,8 +1,4 @@
-﻿
-using System.Linq;
-using System.Text.Json.Serialization;
-
-namespace MusicManager.DBManagement.Query
+﻿namespace MusicManager.DBManagement.Query
 {
     internal class DBQuery
     {

@@ -1,8 +1,5 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Data;
-using System.ComponentModel.DataAnnotations;
-using MusicManager.ViewModel;
+﻿using MusicManager.ViewModel;
+using System.Windows;
 
 namespace MusicManager
 {

@@ -1,10 +1,6 @@
 ﻿using MusicManager.DBManagement.ManagementKits;
-using MusicManager.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MusicManager.DBManagement.Query
 {
@@ -32,12 +28,12 @@ namespace MusicManager.DBManagement.Query
             AddDefaultQuery(ToolType.DataProvider, MusicType, (T)(object)MusicDataType.Default, new DBQuery(@"SELECT * FROM Music;"));
             AddDefaultQuery(ToolType.DataProvider, AuthorType, (T)(object)AuthorDataType.Default, new DBQuery(@"SELECT * FROM Author;"));
             AddDefaultQuery(ToolType.DataProvider, AuthorMusicType, (T)(object)AuthorMusicDataType.Default, new DBQuery(@"SELECT * FROM Music m inner join AuthorMusic am on m.Id = am.MusicId where am.AuthorId = @AuthorId;"));
-            
+
 
             // ------------------------------
             // Data Remover
             // ------------------------------
-            
+
 
             AddDefaultQuery(ToolType.DataRemover, MusicType, (T)(object)MusicDataType.Default, new DBQuery(@"DELETE FROM Music WHERE Music.Id = @param;"));
             AddDefaultQuery(ToolType.DataRemover, AuthorType, (T)(object)AuthorDataType.Default, new DBQuery(@"DELETE FROM Author WHERE Author.Id = @param;"));
@@ -51,8 +47,8 @@ namespace MusicManager.DBManagement.Query
             AddDefaultQuery(ToolType.DataAdder, MusicType, (T)(object)MusicDataType.Default, new DBQuery(@"INSERT INTO Music VALUES (@title, @duration, @style);"));
             AddDefaultQuery(ToolType.DataAdder, AuthorType, (T)(object)AuthorDataType.Default, new DBQuery(@"INSERT INTO Author VALUES (@name);"));
             AddDefaultQuery(ToolType.DataAdder, AuthorMusicType, (T)(object)AuthorDataType.Default, new DBQuery(@"INSERT INTO AuthorMusic VALUES (@musicId, @authorId);"));
-        
-        
+
+
             // ------------------------------
             // Data Replacer
             // ------------------------------

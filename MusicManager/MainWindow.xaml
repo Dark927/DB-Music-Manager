@@ -6,7 +6,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:MusicManager.ViewModel" 
         mc:Ignorable="d"
-        Title="MainWindow" Height="475" Width="800" MinHeight="475" MinWidth="675" WindowStartupLocation="CenterScreen">
+        Title="Music Manager" Height="475" Width="800" MinHeight="475" MinWidth="675" WindowStartupLocation="CenterScreen">
 
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <!--Resources-->

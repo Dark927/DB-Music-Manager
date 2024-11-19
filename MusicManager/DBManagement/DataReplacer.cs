@@ -1,6 +1,5 @@
 ﻿using MusicManager.DBManagement.Query;
 using System;
-using System.Data;
 
 namespace MusicManager.DBManagement
 {

@@ -51,4 +51,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Utility">
+      <HintPath>Utilities\Utility.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
