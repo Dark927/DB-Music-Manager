@@ -1,0 +1,61 @@
+﻿<Window x:Class="MusicViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:MusicViewer"
+        mc:Ignorable="d"
+        Title="Music Manager - Data Viewer" MinHeight="450" MinWidth="700" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Thickness x:Key="ButtonsDefaultMargin">15</Thickness>
+    </Window.Resources>
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Black"/>
+            <GradientStop Color="#FF712A08" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="10"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <DataGrid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5" Grid.RowSpan="2" ItemsSource="{Binding ActiveTable}"
+                  AutoGenerateColumns="True"
+                  AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"
+                  CanUserAddRows="False"
+                  SelectedItem="{Binding SelectedGridItem}"/>
+
+        <Button Grid.Row="3" Grid.Column="1" Content="Insert" Command="{Binding InsertCommand}" Margin="{StaticResource ButtonsDefaultMargin}"></Button>
+        <Button Grid.Row="3" Grid.Column="2" Content="Save Changes" Command="{Binding SaveCommand}" Margin="{StaticResource ButtonsDefaultMargin}"></Button>
+        <Button Grid.Row="3" Grid.Column="3" Content="Cancel Changes" Command="{Binding CancelCommand}" Margin="{StaticResource ButtonsDefaultMargin}"></Button>
+        <Button Grid.Row="4" Grid.Column="1" Content="Add Song File" Command="{Binding UploadCommand}" CommandParameter="{Binding SelectedGridItem, Mode=TwoWay}" Margin="{StaticResource ButtonsDefaultMargin}"></Button>
+        <Button Grid.Row="4" Grid.Column="2" Content="Download Song" Command="{Binding DownloadCommand}" CommandParameter="{Binding SelectedGridItem, Mode=TwoWay}" Margin="{StaticResource ButtonsDefaultMargin}"></Button>
+        <Button Grid.Row="4" Grid.Column="3" Content="Delete Song File" Command="{Binding DeleteMusicCommand}" CommandParameter="{Binding SelectedGridItem, Mode=TwoWay}" Margin="{StaticResource ButtonsDefaultMargin}"></Button>
+
+
+        <ComboBox Grid.Row="3" Grid.Column="5" Margin="15" ItemsSource="{Binding TableTypes}" 
+                  SelectedItem="{Binding ActiveTableType, Mode=TwoWay}" VerticalContentAlignment="Center" FontSize="14" FontWeight="SemiBold">
+        </ComboBox>
+    </Grid>
+</Window>

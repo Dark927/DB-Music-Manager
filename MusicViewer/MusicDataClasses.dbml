@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="MusicManagerDB" Class="MusicDataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=DESKTOP-S626KKO\DARKSQL;Initial Catalog=MusicManagerDB;Persist Security Info=True;User ID=sa;Pooling=False;Encrypt=True;Trust Server Certificate=True" SettingsObjectName="MusicViewer.Properties.Settings" SettingsPropertyName="MusicManagerDBConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.AuthorMusic" Member="AuthorMusics">
+    <Type Name="AuthorMusic">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="MusicId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="AuthorId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="Author_AuthorMusic" Member="Author" ThisKey="AuthorId" OtherKey="Id" Type="Author" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+      <Association Name="Music_AuthorMusic" Member="Music" ThisKey="MusicId" OtherKey="Id" Type="Music" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Author" Member="Authors">
+    <Type Name="Author">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Association Name="Author_AuthorMusic" Member="AuthorMusics" ThisKey="Id" OtherKey="AuthorId" Type="AuthorMusic" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Files" Member="MusicFiles">
+    <Type Name="MusicFile">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="FileMp3" Member="mp3" Storage="_FileMp3" Type="System.Byte[]" DbType="VARBINARY (MAX) NULL" CanBeNull="false" IsDelayLoaded="true" />
+      <Association Name="MusicFile_Music" Member="Musics" ThisKey="Id" OtherKey="FileID" Type="Music" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Music" Member="Musics">
+    <Type Name="Music">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Duration" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Style" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="FileID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Music_AuthorMusic" Member="AuthorMusics" ThisKey="Id" OtherKey="MusicId" Type="AuthorMusic" />
+      <Association Name="MusicFile_Music" Member="MusicFile" Storage="_File" ThisKey="FileID" OtherKey="Id" Type="MusicFile" IsForeignKey="true" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+</Database>
