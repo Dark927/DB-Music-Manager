@@ -302,8 +302,7 @@ namespace MusicViewer
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Author")]
 	public partial class Author : INotifyPropertyChanging, INotifyPropertyChanged
 	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+        private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
 		private int _Id;
 		

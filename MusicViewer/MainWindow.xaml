@@ -6,7 +6,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:MusicViewer"
         mc:Ignorable="d"
-        Title="Music Manager - Data Viewer" MinHeight="450" MinWidth="700" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+        Title="Music Manager - Data Viewer" MinHeight="550" MinWidth="700" Height="600" Width="800" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Thickness x:Key="ButtonsDefaultMargin">15</Thickness>
     </Window.Resources>
@@ -37,6 +37,7 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="10"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -52,6 +53,14 @@
         <Button Grid.Row="4" Grid.Column="1" Content="Add Song File" Command="{Binding UploadCommand}" CommandParameter="{Binding SelectedGridItem, Mode=TwoWay}" Margin="{StaticResource ButtonsDefaultMargin}"></Button>
         <Button Grid.Row="4" Grid.Column="2" Content="Download Song" Command="{Binding DownloadCommand}" CommandParameter="{Binding SelectedGridItem, Mode=TwoWay}" Margin="{StaticResource ButtonsDefaultMargin}"></Button>
         <Button Grid.Row="4" Grid.Column="3" Content="Delete Song File" Command="{Binding DeleteMusicCommand}" CommandParameter="{Binding SelectedGridItem, Mode=TwoWay}" Margin="{StaticResource ButtonsDefaultMargin}"></Button>
+        
+        <Button Grid.Row="4" Grid.Column="5" Content="Play song" Command="{Binding PlayMusicCommand}" CommandParameter="{Binding SelectedGridItem, Mode=TwoWay}" Margin="{StaticResource ButtonsDefaultMargin}" Background="#FF4CED5D"></Button>
+        <Button Grid.Row="5" Grid.Column="5" Content="Stop song" Command="{Binding StopMusicCommand}" CommandParameter="{Binding SelectedGridItem, Mode=TwoWay}" Margin="{StaticResource ButtonsDefaultMargin}" Background="#FFFFBC29"></Button>
+
+        <Slider Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" 
+                VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                Minimum="0" Maximum="{Binding SliderMaxValue, Mode=OneWay}" Value="{Binding SliderValue}"
+                MouseLeftButtonUp="Slider_MouseLeftButtonUp" SmallChange="0.05"/>
 
 
         <ComboBox Grid.Row="3" Grid.Column="5" Margin="15" ItemsSource="{Binding TableTypes}" 

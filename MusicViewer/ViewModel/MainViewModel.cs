@@ -1,17 +1,16 @@
-﻿using Microsoft.Win32;
-using MusicManager.ViewModel;
+﻿using MusicManager.ViewModel;
 using MusicViewer.DBManagement;
+using MusicViewer.Interface;
+using MusicViewer.Scripts;
+using MusicViewer.Scripts.Audio;
+using MusicViewer.ViewModel;
+using NAudio.Wave;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Linq;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Xml.Linq;
 
 namespace MusicViewer
 {
@@ -22,7 +21,7 @@ namespace MusicViewer
         AuthorMusic
     }
 
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : INotifyPropertyChanged, IViewModel
     {
         #region Fields
 
@@ -30,19 +29,20 @@ namespace MusicViewer
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private MusicDataClassesDataContext _musicDataClassesDataContext;
+        private MusicDataClassesDataContext _dataContext;
+        private DBUpdater _dbUpdater;
 
-        private ObservableCollection<Author> _authorsList;
-        private ObservableCollection<Music> _musicList;
-        private ObservableCollection<AuthorMusic> _authorMusicList;
-
-        private Table<Music> _musicTable;
-        private Table<Author> _authorTable;
-        private Table<AuthorMusic> _authorMusicTable;
+        private LocalDataModel _localDataManager;
 
         private object _activeTable;
         private object _selectedGridItem;
         private TableType _activeTableType;
+
+        private double _sliderMaxValue;
+        private double _sliderValue;
+
+        private WaveStream _activeAudioWave;
+
 
         #endregion
 
@@ -55,41 +55,43 @@ namespace MusicViewer
         public ICommand DownloadCommand { get; private set; }
         public ICommand UploadCommand { get; private set; }
         public ICommand DeleteMusicCommand { get; private set; }
+        public ICommand PlayMusicCommand { get; private set; }
+        public ICommand StopMusicCommand { get; private set; }
 
         public ObservableCollection<TableType> TableTypes { get; set; }
 
         public MusicDataClassesDataContext ClassesDataContext
         {
-            get => _musicDataClassesDataContext;
-            private set => _musicDataClassesDataContext = value;
+            get => _dataContext;
+            private set => _dataContext = value;
         }
 
         public ObservableCollection<Author> AuthorsList
         {
-            get => _authorsList;
+            get => _localDataManager.Authors;
             set
             {
-                _authorsList = value;
+                _localDataManager.Authors = value;
                 OnPropertyChanged(nameof(AuthorsList));
             }
         }
 
         public ObservableCollection<AuthorMusic> AuthorMusicList
         {
-            get => _authorMusicList;
+            get => _localDataManager.AuthorMusic;
             set
             {
-                _authorMusicList = value;
+                _localDataManager.AuthorMusic = value;
                 OnPropertyChanged(nameof(AuthorMusicList));
             }
         }
 
         public ObservableCollection<Music> MusicsList
         {
-            get => _musicList;
+            get => _localDataManager.Musics;
             set
             {
-                _musicList = value;
+                _localDataManager.Musics = value;
                 OnPropertyChanged(nameof(MusicsList));
             }
         }
@@ -125,6 +127,32 @@ namespace MusicViewer
             }
         }
 
+        public double SliderMaxValue
+        {
+            get => _sliderMaxValue;
+            set
+            {
+                if (value != _sliderMaxValue)
+                {
+                    _sliderMaxValue = value;
+                    OnPropertyChanged(nameof(SliderMaxValue));
+                }
+            }
+        }
+
+        public double SliderValue
+        {
+            get => _sliderValue;
+            set
+            {
+                if (value != _sliderValue)
+                {
+                    _sliderValue = value;
+                    OnPropertyChanged(nameof(SliderValue));
+                }
+            }
+        }
+
         #endregion
 
 
@@ -132,21 +160,9 @@ namespace MusicViewer
 
         public MainViewModel()
         {
-            string connection = "Server=tcp:musicmanagerserver.database.windows.net,1433;Initial Catalog=MusicDB;Persist Security Info=False;User ID=dark;Password=u4AwD–s_\\$KHy}Y;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-            ClassesDataContext = new MusicDataClassesDataContext(connection);
-
-
-            TableTypes = new ObservableCollection<TableType>((TableType[])Enum.GetValues(typeof(TableType)));
-
-            InitTables();
-            SyncDataWithDB();
-
-
-            ActiveTable = MusicsList;
-            ActiveTableType = TableType.Music;
-            _musicFilesController = new MusicFilesController(MusicsList);
-
+            InitDataAndSync();
             InitCommands();
+            SetDefaultProperties();
         }
 
         public void OnPropertyChanged(string propertyName)
@@ -154,67 +170,135 @@ namespace MusicViewer
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public void SyncDataWithDB(MusicDataClassesDataContext context)
+        {
+            MusicsList = new ObservableCollection<Music>(context.Musics.ToList());
+            AuthorsList = new ObservableCollection<Author>(context.Authors.ToList());
+            AuthorMusicList = new ObservableCollection<AuthorMusic>(context.AuthorMusics.ToList());
+            SwitchActiveDataList(ActiveTableType);
+        }
+
+        private void SyncViewModel(object sender, EventArgs e)
+        {
+            SyncDataWithDB(ClassesDataContext);
+        }
+
+        private void InitDataAndSync()
+        {
+            TableTypes = new ObservableCollection<TableType>((TableType[])Enum.GetValues(typeof(TableType)));
+
+            ClassesDataContext = DBDataContext.Instance.GetContext();
+            _musicFilesController = new MusicFilesController(ClassesDataContext);
+            _localDataManager = new LocalDataModel();
+
+            _dbUpdater = new DBUpdater(ClassesDataContext);
+            _dbUpdater.OnDataUpdated += SyncViewModel;
+
+            SyncDataWithDB(ClassesDataContext);
+
+            ActiveTable = MusicsList;
+            ActiveTableType = TableType.Music;
+        }
+
+        private void SetDefaultProperties()
+        {
+            SliderValue = 0;
+            SliderMaxValue = 100;
+        }
+
         private void InitCommands()
         {
-            InsertCommand = new RelayCommand(Insert);
+            InsertCommand = new RelayCommand(InsertSong);
             SaveCommand = new RelayCommand(SaveChanges);
             CancelCommand = new RelayCommand(CancelChanges);
             DownloadCommand = new RelayCommand(_musicFilesController.RequestFile);
             UploadCommand = new RelayCommand(_musicFilesController.PushFile);
             DeleteMusicCommand = new RelayCommand(_musicFilesController.DeleteFile);
+            PlayMusicCommand = new RelayCommand(PlaySong);
+            StopMusicCommand = new RelayCommand(StopSong);
         }
 
-        private void InitTables()
+        private void PlaySong(object parameter)
         {
-            _musicTable = ClassesDataContext.Musics;
-            _authorTable = ClassesDataContext.Authors;
-            _authorMusicTable = ClassesDataContext.AuthorMusics;
+            _musicFilesController.PlaySong(parameter);
+
+            IAudioPlayer audioPlayer = _musicFilesController.ActiveAudioPlayer;
+            audioPlayer.OnAudioLoaded += AudioLoaded;
+            audioPlayer.OnTimerTick += SliderUpdate;
+
         }
 
-        private void SyncDataWithDB()
+        private void StopSong(object parameter)
         {
-            MusicsList = new ObservableCollection<Music>(_musicTable.ToList());
-            AuthorsList = new ObservableCollection<Author>(_authorTable.ToList());
-            AuthorMusicList = new ObservableCollection<AuthorMusic>(_authorMusicTable.ToList());
-            SwitchActiveDataList(ActiveTableType);
+            IAudioPlayer audioPlayer = _musicFilesController.ActiveAudioPlayer;
+
+            if (audioPlayer != null)
+            {
+                audioPlayer.Stop();
+                SliderValue = 0;
+            }
         }
 
-        private void Insert(object parameter)
+        private void AudioLoaded(object sender, AudioArgs e)
+        {
+            SliderMaxValue = e.TotalSeconds;
+        }
+
+        private void SliderUpdate(object sender, AudioArgs e)
+        {
+            SliderValue = e.TotalSeconds;
+        }
+
+        private void InsertSong(object parameter)
         {
             MusicsList.Add(new Music() { Id = MusicsList.Last().Id + 1, Title = "505", Duration = "", Style = "" });
         }
 
         private void SaveChanges(object parameter)
         {
-            UpdateDB(_musicTable, MusicsList, DataComparators.MusicComparator);
+            UpdateDB(_dataContext.Musics, MusicsList, DataComparators.MusicComparator);
 
-            ClassesDataContext.SubmitChanges();
-            SyncDataWithDB();
+
+            if (DBDataContext.HasContextChanges(ClassesDataContext))
+            {
+                InfoBoxes.ContextChangesInfo(ClassesDataContext);
+                ClassesDataContext.SubmitChanges();
+                SyncDataWithDB(ClassesDataContext);
+            }
+            else
+            {
+                InfoBoxes.DataUpToDateInfo();
+            }
         }
+
 
         private void UpdateDB<T>(Table<T> table, ObservableCollection<T> newData, Func<T, T, bool> comparator) where T : class
         {
             var existingDataList = table.ToList();
 
-            foreach (var data in newData)
-            {
-                bool exists = existingDataList.Any(existingData => comparator(existingData, data));
+            // Remove data which not exists in Table
 
-                if (!exists)
-                {
-                    table.InsertOnSubmit(data);
-                    existingDataList.Add(data);
-                }
-            }
+            var itemsToRemove = existingDataList
+                .Where(existingItem => !newData.Any(data => comparator(existingItem, data)))
+                .ToList();
+
+            table.DeleteAllOnSubmit(itemsToRemove);
+
+            // Add data which not exists in Table
+
+            var itemsToInsert = newData
+                .Where(data => !existingDataList.Any(existingData => comparator(data, existingData)))
+                .Distinct()
+                .ToList();
+
+            table.InsertAllOnSubmit(itemsToInsert);
         }
 
         private void CancelChanges(object parameter)
         {
-            ClassesDataContext.Refresh(RefreshMode.OverwriteCurrentValues, ClassesDataContext.Musics);
-            ClassesDataContext.Refresh(RefreshMode.OverwriteCurrentValues, ClassesDataContext.AuthorMusics);
-            ClassesDataContext.Refresh(RefreshMode.OverwriteCurrentValues, ClassesDataContext.Authors);
-            SyncDataWithDB();
+            _dbUpdater.CancelChanges(this, parameter);
         }
+
 
         private void SwitchActiveDataList(TableType type)
         {

@@ -1,55 +1,45 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
+using MusicViewer.Scripts.Audio;
 using System.IO;
+using System.Linq;
+using System.Windows;
 
 namespace MusicViewer.DBManagement
 {
     public class MusicFilesController
     {
-        private ObservableCollection<Music> _musicDataList;
+        private MusicDataClassesDataContext _dataContext;
+        private IAudioPlayer _activeAudioPlayer;
 
-        public MusicFilesController(object musicTable)
+        public IAudioPlayer ActiveAudioPlayer { get => _activeAudioPlayer; }
+
+        public MusicFilesController(MusicDataClassesDataContext context)
         {
-            if (musicTable is ObservableCollection<Music> musicDataList)
-            {
-                _musicDataList = musicDataList;
-            }
-            else
-            {
-                MessageBox.Show($"{this.ToString()} : music table is not correct!");
-            }
+            _dataContext = context;
         }
 
         public void PushFile(object selectedItem)
         {
-            if (_musicDataList is ObservableCollection<Music> musics)
+            Music selectedMusic = selectedItem as Music;
+
+            if (selectedMusic == null)
             {
-                Music selectedMusic = selectedItem as Music;
+                return;
+            }
 
-                if (selectedMusic == null)
-                {
-                    return;
-                }
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "MP3 files (*.mp3)|*.mp3",
+                Title = "Select MP3 File"
+            };
 
-                var openFileDialog = new OpenFileDialog
-                {
-                    Filter = "MP3 files (*.mp3)|*.mp3",
-                    Title = "Select MP3 File"
-                };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                byte[] fileData = File.ReadAllBytes(openFileDialog.FileName);
+                selectedMusic.MusicFile = new MusicFile();
+                selectedMusic.MusicFile.mp3 = fileData;
 
-                if (openFileDialog.ShowDialog() == true)
-                {
-                    byte[] fileData = File.ReadAllBytes(openFileDialog.FileName);
-                    selectedMusic.MusicFile = new MusicFile();
-                    selectedMusic.MusicFile.mp3 = fileData;
-
-                    MessageBox.Show($"Music File '{Path.GetFileName(openFileDialog.FileName)}' loaded successfully.");
-                }
+                MessageBox.Show($"Music File '{Path.GetFileName(openFileDialog.FileName)}' loaded successfully.");
             }
         }
 
@@ -93,17 +83,39 @@ namespace MusicViewer.DBManagement
                     return;
                 }
 
-                if (music.MusicFile != null)
+                var fileToDelete = _dataContext.MusicFiles.FirstOrDefault(f => f.Id == music.FileID);
+
+                if (fileToDelete != null)
                 {
-                    music.MusicFile.mp3 = null;
+                    _dataContext.MusicFiles.DeleteOnSubmit(fileToDelete);
                     music.MusicFile = null;
                     music.FileID = null;
-                    MessageBox.Show($"File deleted successfully.");
+                }
+                else
+                {
+                    MessageBox.Show("Can not find the file to delete");
                 }
             }
             else
             {
                 MessageBox.Show("Selected item is not a music!");
+            }
+        }
+
+        public void PlaySong(object selectedItem)
+        {
+            if (selectedItem is Music music)
+            {
+                if (music.FileID == null)
+                {
+                    MessageBox.Show("MP3 is empty.");
+
+                    return;
+                }
+
+                _activeAudioPlayer?.Stop();
+                _activeAudioPlayer = new AudioPlayerMp3();
+                _activeAudioPlayer.PlayFromBytes(music.MusicFile.mp3);
             }
         }
     }
